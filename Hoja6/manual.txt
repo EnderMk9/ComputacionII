@@ -1,0 +1,20 @@
+f(x)=x²-2; f'(x)=2x
+x=+-sqrt(2)= 1,41421356237
+
+Si partimos de x_0=1.5
+
+x_1 = x_0 - f(x_0)/f'(x_0)=1.5-(0.25)/3=1.5-1/12=17/12=1.41(6666...)
+x_2 = x_1 - f(x_1)/f'(x_1)=17/12 - (6.94e-3)/(17/6)=17/12 - 2.45098e-3 = 577/408 = 1.41421(568627)
+x_3 = x_1 - f(x_2)/f'(x_2)=577/408 - (6.0073e-6)/(577/204) = 577/408 - 2.12389981e-6 = 1.414213562
+
+Podemos ver que en la primera iteración tenemos una precisión de dos cifras decimales, en la siguiente
+tenemos una precisión de 5 cifras decimales y en la tercera de 9 cifras decimales.
+
+f(x)=4x³-2x²+2; f'(x)=12x²-4x; x_0=-1
+
+x_1 = x_0 - f(x_0)/f'(x_0) = -1-(-4)/16 = -3/4
+x_2 = x_1 - f(x_1)/f'(x_1) = -3/4 - (-0.8125)/9.75 = -2/3
+x_3 = x_1 - f(x_2)/f'(x_2) = -2/3 - (-2/27)/8=-71/108 = -0.65740
+x_4 = x_1 - f(x_3)/f'(x_3) = -71/108 - (-0.0008541634913381557)/7.8158436213991775 = -0.657298 <- Solucion correcta
+
+En este caso tardamos 4 iteraciones en obtener el valor con precisión de 1e-6
