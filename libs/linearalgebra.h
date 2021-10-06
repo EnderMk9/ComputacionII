@@ -4,8 +4,8 @@ typedef vector<double> Vector;            // Create a type called Vector that is
 
 // displays in console a matrix
 void coutmat(Matrix& M){                  // Input is Matrix M passed with & as a pointer
-    cout << endl;     
-    int rows=M.size(); int cols=M[0].size(); // size of M                  
+    cout << endl;
+    int rows=M.size(); int cols=M[0].size(); // size of M
     for (int i = 0; i < rows; i++){          // for every row
         for (int j = 0; j < cols; j++){      // for every column
             cout << M[i][j] << " ";          // Show Mij index of M followed by a space
@@ -14,7 +14,7 @@ void coutmat(Matrix& M){                  // Input is Matrix M passed with & as 
 }
 // displays in console a matrix
 void coutvec(Vector& v){                  // Input is Matrix M passed with & as a pointer
-    cout << endl;                          
+    cout << endl;
     int rows=v.size();                        // Size of the vector.
     for (int i = 0; i < rows; i++){          // for every row
             cout << v[i] << " ";          // Show Mij index of M followed by a space
@@ -32,7 +32,7 @@ Matrix matprod(Matrix& A, Matrix& B){  // Inputs are Matrices A and B passed wit
     int Crows=Arows; int Ccols=Bcols;           // dimensions of the product
     Matrix C( Crows,vector<double>(Ccols,0));   // definition of the product
     for (int i = 0; i < Crows; i++){            // every row
-        for (int j = 0; j < Ccols; j++){        // every column                      
+        for (int j = 0; j < Ccols; j++){        // every column
             for (int k = 0; k < Crows; k++){    // over the common index
                 C[i][j] += A[i][k]*B[k][j];     // multiplication and sum
             }
@@ -97,7 +97,7 @@ Matrix gramschmidt(Matrix& M){
             if (jsqr == 0){
                 cout << "ERROR NOT INDEPENDENT" << endl;
                 return Matrix {0};
-            }      
+            }
             double proyection =jip/jsqr; // orthogonal proyection of veci onto vec_j
             for (int k = 0; k < d; k++){        // for every component
                 G[i][k] -= G[j][k]*proyection;  // Gram-Schmidt
@@ -110,7 +110,7 @@ Matrix gramschmidt(Matrix& M){
             cout << "ERROR NOT INDEPENDENT" << endl;
             return Matrix {0};
         }
-        
+
         for (int j = 0; j < n; j++){
             G[i][j] = G[i][j]/norm;
         }
@@ -140,7 +140,7 @@ void LU(Matrix& A, Matrix& L, Matrix& U){
                     U[i][j]-=L[i][k]*U[k][j];}
             }
         }
-    }   
+    }
 }
 Vector LUSolve(Matrix& A, Vector& b){
     int n=A.size(); int cols=A[0].size();  // Size of M
@@ -150,16 +150,17 @@ Vector LUSolve(Matrix& A, Vector& b){
     Matrix L( n,vector<double>(n,0));
     Matrix U( n,vector<double>(n,0));
     LU(A,L,U);
-    coutmat(L); coutmat(U);
-    Vector z(n,0); Vector x(n,0); 
+    // coutmat(L); coutmat(U);
+    Vector z(n,0); Vector x(n,0);
     for(int i = 0; i < n; i++){
         z[i] = b[i];
         for(int j = 0; j < i; j++){
             z[i] -= L[i][j]*z[j];
-        }}
-    for(int i = 0; i < n; i++){
+        }
+      }
+    for(int i = n-1; i >= 0; i--){
         x[i] = z[i];
-        for(int j = i; j < n; j++){
+        for(int j = i+1; j < n; j++){
             x[i] -= U[i][j]*x[j];
             }
         x[i] = x[i]/U[i][i];
