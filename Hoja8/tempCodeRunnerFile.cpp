@@ -1,0 +1,1 @@
+Vector AD = MatrixDiag(A); Vector x0 = VecDiv(b,AD);

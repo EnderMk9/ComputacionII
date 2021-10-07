@@ -32,17 +32,26 @@ void d_w_file_ln(string wname, double rdata[],int lines){
 // writes two arrays as two columns separeted by two spaces in a file,
 // it is necesary that each vector has the same length and that the length
 // and number of lines are specified as an input.
-void d_w_file_2cols(string wname, double rdata1[], double rdata2[],int lines){
+void d_w_file_2cols(string wname, double wdata1[], double wdata2[],int lines){
     ofstream wfile (wname);  // set read file
     for (int i = 0; i < lines; i++){    // for every line
-        wfile << rdata1[i] << "  " << rdata2[i] << endl; // write onto the file the contents of each array separated
+        wfile << wdata1[i] << "  " << wdata2[i] << endl; // write onto the file the contents of each array separated
     }
     wfile.close();  //close the file
 }
-void ld_w_file_2cols(string wname, long double rdata1[], long double rdata2[],int lines){
+void ld_w_file_2cols(string wname, long double wdata1[], long double wdata2[],int lines){
     ofstream wfile (wname);  // set read file
     for (int i = 0; i < lines; i++){    // for every line
-        wfile << rdata1[i] << "  " << rdata2[i] << endl; // write onto the file the contents of each array separated
+        wfile << wdata1[i] << "  " << wdata2[i] << endl; // write onto the file the contents of each array separated
     }
     wfile.close();  //close the file
+}
+
+void d_wa_file_Arr_csv(string waname, double wadata[], int n){
+    ofstream wafile;
+    wafile.open(waname, ios_base::app);
+    for (int i = 0; i < n; i++){    // for every line
+        wafile << wadata[i] << ", " ; // write onto the file the contents of each array separated
+    } wafile << endl;
+    wafile.close();  //close the file
 }
