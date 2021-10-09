@@ -3,11 +3,11 @@
 #include <string>
 #include <math.h>
 using namespace std;
-#include "libs/gnuplot.h"
-#include "libs/rwlib.h"
-#include "libs/funlib.h"
-#include "libs/calculus.h"
-#include "libs/nonlinsolv.h"
+#include "libs/gnuplot.hpp"
+#include "libs/rwlib.hpp"
+#include "libs/funlib.hpp"
+#include "libs/calculus.hpp"
+#include "libs/nonlinsolv.hpp"
 
 const double eta = 6e-10; const double Ebind = 13.6; const double me = 0.510998928e6;
 const double z3 = 1.202056903159594285399;

@@ -2,7 +2,7 @@
 #include <vector>
 #include <math.h>
 using namespace std;
-#include "linearalgebra.h"
+#include "linearalgebra.hpp"
 
 int main(){
     Vector A = {1,2,3};

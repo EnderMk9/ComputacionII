@@ -2,7 +2,7 @@
 #include <vector>
 #include <math.h>
 using namespace std;
-#include "matrixtoolbox.h"
+#include "matrixtoolbox.hpp"
 
 int main(){
     Matrix A = {{2,2,8},

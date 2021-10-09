@@ -3,11 +3,11 @@
 #include <string>
 #include <math.h>
 using namespace std;
-#include "libs/gnuplot.h"    // For plotting inside c++
-#include "libs/rwlib.h"      // For r-w operations
-#include "libs/funlib.h"     // For evaluating functions
-#include "libs/calculus.h"   // For numerical derivatives
-#include "libs/nonlinsolv.h" // For solving zeroes of non-lineal functions
+#include "libs/gnuplot.hpp"    // For plotting inside c++
+#include "libs/rwlib.hpp"      // For r-w operations
+#include "libs/funlib.hpp"     // For evaluating functions
+#include "libs/calculus.hpp"   // For numerical derivatives
+#include "libs/nonlinsolv.hpp" // For solving zeroes of non-lineal functions
 
 const double V0 = 1; const double sigma = 1; // sigma = 1 nm
 

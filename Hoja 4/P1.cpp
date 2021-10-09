@@ -3,8 +3,8 @@
 #include <math.h>
 #include <string>
 using namespace std;
-#include "rwlib.h"
-#include "statistics.h"
+#include "rwlib.hpp"
+#include "statistics.hpp"
 
 int main(){
     string rname = "rdata.txt";

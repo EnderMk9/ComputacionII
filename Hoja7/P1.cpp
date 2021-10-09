@@ -2,7 +2,7 @@
 using namespace std;
 #include <math.h>
 #include <vector>
-#include "libs/linearalgebra.h"
+#include "libs/linearalgebra.hpp"
 
 int main(){
     Matrix A = {{1,1, 1},

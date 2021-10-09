@@ -4,8 +4,8 @@ using namespace std;
 #include <vector>
 #include <fstream>
 #include <string>
-#include "libs/rwlib.h"
-#include "libs/linearalgebra.h"
+#include "libs/rwlib.hpp"
+#include "libs/linearalgebra.hpp"
 // i, x0_1, x0_2, x0_3, x1_1, x1_2, x1_3, Δx_1, Δx_2, Δx_3, ϵ
 int main(){
     Matrix A = {{-6,0,3,1},

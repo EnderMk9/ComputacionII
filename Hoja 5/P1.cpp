@@ -3,11 +3,11 @@
 #include <string>
 #include <math.h>
 using namespace std;
-#include "libs/gnuplot.h"
-#include "libs/rwlib.h"
-#include "libs/funlib.h"
-#include "libs/calculus.h"
-#include "libs/nonlinsolv.h"
+#include "libs/gnuplot.hpp"
+#include "libs/rwlib.hpp"
+#include "libs/funlib.hpp"
+#include "libs/calculus.hpp"
+#include "libs/nonlinsolv.hpp"
 
 double h(double t){
     double h0 = 300; double g  = 32.17; double m  = 0.25; double k  = 0.1;
@@ -30,4 +30,3 @@ int main(){
     cout << secant(h,6.2,6.1,1e-8) << endl;
     cout << NewtonRhapsonNum(h, 6.5, 1e-8, 0.01, 1) << endl;
 }
-    
