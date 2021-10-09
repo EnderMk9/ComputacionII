@@ -231,7 +231,7 @@ Vector MatrixDiag(Matrix& A){
 // and the equation still holds. Dominant : A_{ii} > \sum_{j\neq i}{A_{ij}}
 // It is necesary to provide an initial point to begin the iteration
 // A good one is Vector AD = MatrixDiag(A); Vector x0 = VecDiv(b,AD);
-Vector JacobiSolve(Matrix& A, Vector& b, Vector& x0, bool print, double tolerance, bool out){
+Vector JacobiSolve(Matrix& A, Vector& b, Vector& x0, double tolerance, bool print){
     int n=A.size(); int cols=A[0].size();  // Size of M
     int bsize = b.size();                  // Size of b
     if (cols != n || bsize != n){                           // Check if M is square
@@ -243,16 +243,20 @@ Vector JacobiSolve(Matrix& A, Vector& b, Vector& x0, bool print, double toleranc
     double epsilon = 2*tolerance;   // |x^n+1-x^n|<\epsilon
     int k{};    // initialize iteration count
     while (epsilon > tolerance){
+        //cout << "k: " << k << endl;
         x1 = b;
         for (int i = 0; i < n; i++){
             for (int j = 0; j < n; j++){
                 if (j != i){
                     x1[i] -= A[i][j]*x0[j];
-                    x1[i] = x1[i]/A[i][i];
-            }}}
+                }}
+            //cout << "i: " << i << endl;
+            x1[i] = x1[i]/A[i][i];
+        }
         Deltax = VecDiff(x1, x0);
         epsilon = norm(Deltax);
-        if (out){
+        //cout << epsilon << endl;
+        if (print){
             acout[0] = double(k);
             copy(x0.begin(), x0.end(), acout+1);
             copy(x1.begin(), x1.end(), acout+n+1);
@@ -262,10 +266,12 @@ Vector JacobiSolve(Matrix& A, Vector& b, Vector& x0, bool print, double toleranc
         x0 = x1;
         k++;    // advance iteration
     }
+    //cout << "Success!" << endl;
+    //coutvec(x1);
     return x1;   // Return the solution
 }
 
-Vector GaussSeidelSolve(Matrix& A, Vector& b, Vector& x0, bool print, double tolerance, bool out){
+Vector GaussSeidelSolve(Matrix& A, Vector& b, Vector& x0, double tolerance, bool print){
     int n=A.size(); int cols=A[0].size();  // Size of M
     int bsize = b.size();                  // Size of b
     if (cols != n || bsize != n){                           // Check if M is square
@@ -282,14 +288,14 @@ Vector GaussSeidelSolve(Matrix& A, Vector& b, Vector& x0, bool print, double tol
             for (int j = 0; j < n; j++){
                 if (j < i){
                     x1[i] -= A[i][j]*x1[j];
-                    x1[i] = x1[i]/A[i][i];
                 } else if (j > i){
                     x1[i] -= A[i][j]*x0[j];
-                    x1[i] = x1[i]/A[i][i];
-            }}}
+            }}
+            x1[i] = x1[i]/A[i][i];
+        }
         Deltax = VecDiff(x1, x0);
         epsilon = norm(Deltax);
-        if (out){
+        if (print){
             acout[0] = double(k);
             copy(x0.begin(), x0.end(), acout+1);
             copy(x1.begin(), x1.end(), acout+n+1);
