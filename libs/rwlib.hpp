@@ -23,6 +23,7 @@ void d_r_file_ln(string rname, double rdata[]){
 
 void d_w_file_ln(string wname, double rdata[],int lines){
     ofstream wfile (wname);  // set read file
+    wfile.precision(50);
     for (int i = 0; i < lines; i++){
         wfile << rdata[i] << endl;
     }

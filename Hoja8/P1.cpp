@@ -15,9 +15,9 @@ int main(){
     Vector b = {3,-4,5,-2};
     Vector AD = MatrixDiag(A);
     Vector x0 = VecDiv(b,AD);
-    Vector sJ = JacobiSolve(A, b, x0, 1e-5,1);
+    Vector sJ = JacobiSolve(A, b, x0, 1e-5,0);
     coutvec(sJ);
-    Vector sG = GaussSeidelSolve(A, b, x0, 1e-5,1);
+    Vector sG = GaussSeidelSolve(A, b, x0, 1e-5,0);
     Vector sLU = LUSolve(A,b);
     coutvec(sG); coutvec(sLU);
 }
