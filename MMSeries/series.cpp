@@ -11,6 +11,7 @@ using namespace std;
 
 double a0 = 1; double a1 = 1;
 
+// y''+y'-xy=0
 double a(int n, double an_1, double an_3){
   return (an_3-an_1*(n-1))/(n*(n-1));
 }
@@ -28,7 +29,7 @@ double series(double x, double terms[],int N, int n0){
 }
 
 int main(){
-  const int N = 150;
+  const int N = 250;
   double as[N+1]{};
   as[1] = a0; as[2] = a1;
   for (int i = 2; i < N; i++) {
