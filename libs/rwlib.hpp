@@ -21,9 +21,9 @@ void d_r_file_ln(string rname, double rdata[]){
     rfile.close();
 }
 
-void d_w_file_ln(string wname, double rdata[],int lines){
+void d_w_file_ln(string wname, double rdata[],int lines, int pres){
     ofstream wfile (wname);  // set read file
-    wfile.precision(50);
+    wfile.precision(pres);
     for (int i = 0; i < lines; i++){
         wfile << rdata[i] << endl;
     }
