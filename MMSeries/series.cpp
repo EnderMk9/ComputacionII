@@ -35,7 +35,7 @@ int main(){
   for (int i = 2; i < N; i++) {
     as[i+1] = a(i+1,as[i],as[i-2]);
   }
-  d_w_file_ln("terms.csv", as, N+1);
+  d_w_file_ln("terms.csv", as, N+1,50);
   function<double (double) > serie = bind(series,_1,as,N,1);
   double x [1001]{}; double y[1001]{};
   eval(serie, -8, 4, 1000, x,y);
