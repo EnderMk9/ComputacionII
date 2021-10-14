@@ -21,6 +21,11 @@ void coutvec(Vector& v){                  // Input is Matrix M passed with & as 
     } cout << endl;
 }
 
+Vector fillvec(double value, int n){
+    Vector f(n,value);
+    return f;
+}
+
 // Multiplies two matrices
 Matrix matprod(Matrix& A, Matrix& B){  // Inputs are Matrices A and B passed with & as a pointer
     int Arows=A.size(); int Acols=A[0].size();  // sizes of A
@@ -212,8 +217,65 @@ Vector LUSolve(Matrix& A, Vector& b){
     return x;   // Return the solution
 }
 
+// a,b,c are the diagonals of the matrix as vectors
+// Vector b must be 1 dimension bigger than a and c
+// a and c must have the same dimension
+// b and f must have the same dimension
+Matrix TrDiag(Vector& a,Vector& b,Vector& c){
+    int Sa=a.size(); int Sb=b.size(); int Sc=c.size(); // sizes of vectors
+    if (Sa != Sc || Sb - 1 != Sa){ // Check if the sizes are correct
+        cout << "INCORRECT SIZE" << endl;      // error
+        return {};}  
+    Matrix D( Sb,vector<double>(Sb,0));
+    for (int i = 0; i < Sb-1; i++){
+        D[i][i]   = b[i];
+        D[i][i+1] = c[i];
+        D[i+1][i] = a[i];
+    }
+    D[Sb-1][Sb-1] = b[Sb-1];
+    return D;
+}
+
+// Solves Ax=f using Tridiagonal decomposition
+// a,b,c are the diagonals of the matrix as vectors
+// Vector b must be 1 dimension bigger than a and c
+// a and c must have the same dimension
+// b and f must have the same dimension
+Vector TrDiagSolve(Vector& a,Vector& b,Vector& c, Vector& f, bool out = 0, string wname = "TROut.dat"){
+    int Sa=a.size(); int Sb=b.size(); int Sc=c.size(); int Sf=f.size(); // sizes of vectors
+    if (Sa != Sc || Sb - 1 != Sa || Sb != Sf){ // Check if the sizes are correct
+        cout << "INCORRECT SIZE" << endl;      // error
+        return {};}                                         // break
+    // coutmat(L); coutmat(U);
+    Vector alpha(Sa,0); Vector beta(Sb,0);// Define the vectors for the decomposition
+    beta[0] = b[0];
+    for (int i = 1; i < Sb; i++){
+        alpha[i-1]=a[i-1]/beta[i-1];
+        beta[i] = b[i]-alpha[i-1]*c[i-1];
+    }
+    if (out){        
+            double arrbeta[Sb]{}; 
+            double arralpha[Sb]{}; arralpha[Sb-1]=NAN;
+            copy(alpha.begin(), alpha.end(), arralpha);
+            copy(beta.begin(), beta.end(), arrbeta);
+            d_w_file_2cols(wname, arralpha,arrbeta,Sb);
+        }
+    //coutvec(alpha); coutvec(beta);
+    Vector z(Sf,0); Vector x(Sf,0);       // Define the vectors to solve
+    z[0]=f[0];
+    for(int i = 1; i < Sf; i++){         // First solve Lz=f
+        z[i] = f[i] - alpha[i-1]*z[i-1];
+      }
+    //coutvec(z);
+    x[Sf-1] = z[Sf-1]/beta[Sb-1];
+    for(int i = Sb-2; i >= 0; i--){      // Solve Ux=z
+        x[i] = (z[i]-c[i]*x[i+1])/beta[i];
+        }
+    return x;   // Return the solution
+}
+
 // Returns the diagonal of a matrix as a vector
-// A must be
+// A must be square
 Vector MatrixDiag(Matrix& A){
     int n=A.size(); int cols=A[0].size();  // Size of M
     if (cols != n ){                       // Check if M is square
@@ -225,13 +287,13 @@ Vector MatrixDiag(Matrix& A){
     return D;
 }
 
-// Solves Ax=b using Jacobi's iterative method
+// Solves Ax=b using Jacobi's or Gauss-Seidel's iterative method
 // Matrix A must be non-singular, square and b same size as A
 // It is suposed that the matrix A is already in dominant form (if possible)
 // and the equation still holds. Dominant : A_{ii} > \sum_{j\neq i}{A_{ij}}
 // It is necesary to provide an initial point to begin the iteration
 // A good one is Vector AD = MatrixDiag(A); Vector x0 = VecDiv(b,AD);
-Vector JacobiSolve(Matrix& A, Vector& b, Vector& x0, double tolerance, bool print){
+Vector JacobiSolve(Matrix& A, Vector& b, Vector& x0, double tolerance, bool print = 0){
     int n=A.size(); int cols=A[0].size();  // Size of M
     int bsize = b.size();                  // Size of b
     if (cols != n || bsize != n){                           // Check if M is square
@@ -262,7 +324,7 @@ Vector JacobiSolve(Matrix& A, Vector& b, Vector& x0, double tolerance, bool prin
             copy(x1.begin(), x1.end(), acout+n+1);
             copy(Deltax.begin(), Deltax.end(), acout+n+n+1);
             acout[3*n+1] = epsilon;
-            d_wa_file_Arr_csv("JacobiResult.csv", acout, 3*n+2);}
+            d_wa_file_csv("JacobiResult.csv", acout, 3*n+2);}
         x0 = x1;
         k++;    // advance iteration
     }
@@ -271,7 +333,7 @@ Vector JacobiSolve(Matrix& A, Vector& b, Vector& x0, double tolerance, bool prin
     return x1;   // Return the solution
 }
 
-Vector GaussSeidelSolve(Matrix& A, Vector& b, Vector& x0, double tolerance, bool print){
+Vector GaussSeidelSolve(Matrix& A, Vector& b, Vector& x0, double tolerance, bool print = 0){
     int n=A.size(); int cols=A[0].size();  // Size of M
     int bsize = b.size();                  // Size of b
     if (cols != n || bsize != n){                           // Check if M is square
@@ -301,7 +363,7 @@ Vector GaussSeidelSolve(Matrix& A, Vector& b, Vector& x0, double tolerance, bool
             copy(x1.begin(), x1.end(), acout+n+1);
             copy(Deltax.begin(), Deltax.end(), acout+n+n+1);
             acout[3*n+1] = epsilon;
-            d_wa_file_Arr_csv("GaussSeidelResult.csv", acout, 3*n+2);}
+            d_wa_file_csv("GaussSeidelResult.csv", acout, 3*n+2);}
         k++;    // advance iteration
     }
     return x1;   // Return the solution

@@ -21,7 +21,7 @@ void d_r_file_ln(string rname, double rdata[]){
     rfile.close();
 }
 
-void d_w_file_ln(string wname, double rdata[],int lines, int pres){
+void d_w_file_ln(string wname, double rdata[],int lines, int pres = 16){
     ofstream wfile (wname);  // set read file
     wfile.precision(pres);
     for (int i = 0; i < lines; i++){
@@ -33,24 +33,28 @@ void d_w_file_ln(string wname, double rdata[],int lines, int pres){
 // writes two arrays as two columns separeted by two spaces in a file,
 // it is necesary that each vector has the same length and that the length
 // and number of lines are specified as an input.
-void d_w_file_2cols(string wname, double wdata1[], double wdata2[],int lines){
+void d_w_file_2cols(string wname, double wdata1[], double wdata2[],int lines, int pres = 16){
     ofstream wfile (wname);  // set read file
+    wfile.precision(pres);
     for (int i = 0; i < lines; i++){    // for every line
         wfile << wdata1[i] << "  " << wdata2[i] << endl; // write onto the file the contents of each array separated
     }
     wfile.close();  //close the file
 }
-void ld_w_file_2cols(string wname, long double wdata1[], long double wdata2[],int lines){
+void ld_w_file_2cols(string wname, long double wdata1[], long double wdata2[],int lines, int pres = 35){
     ofstream wfile (wname);  // set read file
+    wfile.precision(pres);
     for (int i = 0; i < lines; i++){    // for every line
         wfile << wdata1[i] << "  " << wdata2[i] << endl; // write onto the file the contents of each array separated
     }
     wfile.close();  //close the file
 }
 
-void d_wa_file_Arr_csv(string waname, double wadata[], int n){
+// writes a double array as a line without overwriting the rest of the file
+void d_wa_file_csv(string waname, double wadata[], int n, int pres = 16){
     ofstream wafile;
     wafile.open(waname, ios_base::app);
+    wafile.precision(pres);
     for (int i = 0; i < n; i++){    // for every line
         wafile << wadata[i] << ", " ; // write onto the file the contents of each array separated
     } wafile << endl;
