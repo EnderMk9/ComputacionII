@@ -2,7 +2,7 @@
 // Abel Rosado - 2021
 //------------------------------------------
 
-#include "libs/package.hpp"
+#include "libs/package.hpp" // my setup
 
 Vector f(Vector& x){
     Vector T(3,0);
@@ -14,8 +14,7 @@ Vector f(Vector& x){
 
 int main(){
     Vector x0 = {1,1,1};
-    Vector f1 = f(x0);
-    Vector f0 = NewtonRhapsonNumSys(3,x0,f,10e-8);
+    Vector f0 = NewtonNumSys(3,x0,f,0.001,10e-8,1);
     coutvec(f0);
 }
 

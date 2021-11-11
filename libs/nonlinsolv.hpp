@@ -38,12 +38,12 @@ double secant(double (*f)(double), double x1, double x2, double tolerance){
     return x3;
 }
 
-double NewtonRhapsonNum(double (*f)(double), double x0, double tolerance, double h, bool loop){
+double NewtonNum(double (*f)(double), double x0, double tolerance, double h, bool loop){
     double xp = x0; double x; double d; double y;
     double err = 2*tolerance; int i{};
     if (loop){
         while (err > tolerance){
-            y = f(xp); d = derivativeloop(f, xp, h, tolerance);
+            y = f(xp); d = derivativeLoopCD(f, xp, h, tolerance);
             x = xp - y/d;
             err = abs(xp-x); xp = x;
             i++;
@@ -52,7 +52,7 @@ double NewtonRhapsonNum(double (*f)(double), double x0, double tolerance, double
         return x;
     } else if (!loop){
         while (err > tolerance){
-            y = f(xp); d = derivative(f, xp, h);
+            y = f(xp); d = derivativeCD(f, xp, h);
             x = xp - y/d;
             err = abs(xp-x); xp = x;
             i++;
@@ -63,7 +63,7 @@ double NewtonRhapsonNum(double (*f)(double), double x0, double tolerance, double
     return 0;
 }
 
-double NewtonRhapsonAnal(double (*f)(double),double (*fp)(double), double x0, double tolerance){
+double NewtonAnal(double (*f)(double),double (*fp)(double), double x0, double tolerance){
     double xp = x0; double x; double d; double y;
     double err = 2*tolerance; int i{};
     while (err > tolerance){
@@ -76,33 +76,46 @@ double NewtonRhapsonAnal(double (*f)(double),double (*fp)(double), double x0, do
     return x;
 }
 
-Vector NewtonRhapsonNumSys(int n, Vector& x0, std::function<Vector (Vector&)> f, double tolerance){
+Vector NewtonNumSys(int n,Vector& x0,std::function<Vector(Vector&)> f,double h, double tol,bool loop=0){
     Matrix J( n,vector<double>(n,0));
-    double err = 2*tolerance;
+    double err = 2*tol;
     Vector x = x0; Vector xp = x0;
     Vector b(n,0); Vector d(n,0);
     Vector dx(n,0);
-    while (err > tolerance){
-        J = JacobianNum(n,x, f, 0.1, tolerance);
-        b = f(x);
-        b = ScalMult(b,-1); // independent term
-        d = LUSolve(J, b);
-        x = VecSum(x,d);
-        dx = VecDiff(x,xp);
-        err = norm(dx);
-        xp = x;
+    if (loop){
+        while (err > tol){
+            J = JacobianNum(n,x, f, h, tol,1);
+            b = f(x);
+            b = ScalMult(b,-1); // independent term
+            d = LUSolve(J, b);
+            x = VecSum(x,d);
+            dx = VecDiff(x,xp);
+            err = norm(dx);
+            xp = x;
+        }
+    }else if (not loop){
+        while (err > tol){
+            J = JacobianNum(n,x, f, h);
+            b = f(x);
+            b = ScalMult(b,-1); // independent term
+            d = LUSolve(J, b);
+            x = VecSum(x,d);
+            dx = VecDiff(x,xp);
+            err = norm(dx);
+            xp = x;
+        }
     }
     //coutmat(J);
     return x;
 }
 
-Vector NewtonRhapsonAnalSys(int n, Vector& x0, std::function<Vector (Vector&)> f, std::function<Matrix (Vector&)> J, double tolerance){
+Vector NewtonAnalSys(int n,Vector& x0,std::function<Vector(Vector&)> f,std::function<Matrix(Vector&)> J, double tol){
     Matrix J0( n,vector<double>(n,0));
-    double err = 2*tolerance;
+    double err = 2*tol;
     Vector x = x0; Vector xp = x0;
     Vector b(n,0); Vector d(n,0);
     Vector dx(n,0);
-    while (err > tolerance){
+    while (err > tol){
         J0 = J(x);
         b = f(x);
         b = ScalMult(b,-1); // independent term
