@@ -1,3 +1,7 @@
+//------------------------------------------
+// Abel Rosado - 2021
+//------------------------------------------
+
 // library for dealing with functions, evaluations, definitions, etc
 
 // include <functional>

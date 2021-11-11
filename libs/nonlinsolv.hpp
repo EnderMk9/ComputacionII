@@ -1,3 +1,7 @@
+//------------------------------------------
+// Abel Rosado - 2021
+//------------------------------------------
+
 // Library to solve f=0 for non-linear functions
 // requires calculus.hpp for derivative
 // requires linealgebra.hpp for multivariable functions
@@ -93,7 +97,7 @@ Vector NewtonRhapsonNumSys(int n, Vector& x0, std::function<Vector (Vector&)> f,
 }
 
 Vector NewtonRhapsonAnalSys(int n, Vector& x0, std::function<Vector (Vector&)> f, std::function<Matrix (Vector&)> J, double tolerance){
-    Matrix J( n,vector<double>(n,0));
+    Matrix J0( n,vector<double>(n,0));
     double err = 2*tolerance;
     Vector x = x0; Vector xp = x0;
     Vector b(n,0); Vector d(n,0);

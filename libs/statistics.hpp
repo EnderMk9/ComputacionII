@@ -1,3 +1,7 @@
+//------------------------------------------
+// Abel Rosado - 2021
+//------------------------------------------
+
 // requires <math.h>
 
 double cuadraticmean(double data[], int lines){

@@ -1,3 +1,7 @@
+//------------------------------------------
+// Abel Rosado - 2021
+//------------------------------------------
+
 // Library for derivatives and integrals
 // requires "linearalgebra.hpp" for matrices in multivariable calculus
 

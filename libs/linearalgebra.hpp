@@ -1,5 +1,10 @@
+//------------------------------------------
+// Abel Rosado - 2021
+//------------------------------------------
+
 // requires <vector> and <math.h>
 // requires "rwlib.hpp" ( <fstream> and <string> )
+#include <vector>
 typedef vector<vector<double>> Matrix;    // Create a type called Matrix that is a vector of vectors
 typedef vector<double> Vector;            // Create a type called Vector that is a vector
 
@@ -17,6 +22,7 @@ void coutmat(Matrix& M){                  // Input is Matrix M passed with & as 
         }cout << endl;                       // next line
     } cout << endl;
 }
+
 // displays a vector in console
 void coutvec(Vector& v){                  // Input is Matrix M passed with & as a pointer
     int rows=v.size();                    // Size of the vector.
@@ -199,6 +205,25 @@ Vector MatrixDiag(Matrix& A){
     return D;
 }
 
+// a,b,c are the diagonals of the matrix as vectors
+// Vector b must be 1 dimension bigger than a and c
+// a and c must have the same dimension
+// b and f must have the same dimension
+Matrix TrDiag(Vector& a,Vector& b,Vector& c){
+    int Sa=a.size(); int Sb=b.size(); int Sc=c.size(); // sizes of vectors
+    if (Sa != Sc || Sb - 1 != Sa){ // Check if the sizes are correct
+        cout << "INCORRECT SIZE" << endl;      // error
+        return {};}  
+    Matrix D( Sb,vector<double>(Sb,0));
+    for (int i = 0; i < Sb-1; i++){
+        D[i][i]   = b[i];
+        D[i][i+1] = c[i];
+        D[i+1][i] = a[i];
+    }
+    D[Sb-1][Sb-1] = b[Sb-1];
+    return D;
+}
+
 //-----------------------------------------------------------------------------------------
 // Metric tools
 //-----------------------------------------------------------------------------------------
@@ -334,25 +359,6 @@ Vector LUSolve(Matrix& A, Vector& b){
             }
         x[i] = x[i]/U[i][i];}
     return x;   // Return the solution
-}
-
-// a,b,c are the diagonals of the matrix as vectors
-// Vector b must be 1 dimension bigger than a and c
-// a and c must have the same dimension
-// b and f must have the same dimension
-Matrix TrDiag(Vector& a,Vector& b,Vector& c){
-    int Sa=a.size(); int Sb=b.size(); int Sc=c.size(); // sizes of vectors
-    if (Sa != Sc || Sb - 1 != Sa){ // Check if the sizes are correct
-        cout << "INCORRECT SIZE" << endl;      // error
-        return {};}  
-    Matrix D( Sb,vector<double>(Sb,0));
-    for (int i = 0; i < Sb-1; i++){
-        D[i][i]   = b[i];
-        D[i][i+1] = c[i];
-        D[i+1][i] = a[i];
-    }
-    D[Sb-1][Sb-1] = b[Sb-1];
-    return D;
 }
 
 // Solves Ax=f using Tridiagonal decomposition

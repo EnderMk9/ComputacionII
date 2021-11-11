@@ -1,16 +1,8 @@
-#include <iostream>
-using namespace std;
-#include <functional>
-using namespace std::placeholders;
-#include <vector>
-#include <math.h>
-#include <string>
-#include <fstream>
-#include "libs/rwlib.hpp"
-#include "libs/linearalgebra.hpp"
-#include "libs/funlib.hpp"
-#include "libs/calculus.hpp"
-#include "libs/nonlinsolv.hpp"
+//------------------------------------------
+// Abel Rosado - 2021
+//------------------------------------------
+
+#include "libs/package.hpp"
 
 Vector f(Vector& x){
     Vector T(3,0);

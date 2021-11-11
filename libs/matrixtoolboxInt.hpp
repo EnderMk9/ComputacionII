@@ -1,3 +1,7 @@
+//------------------------------------------
+// Abel Rosado - 2021
+//------------------------------------------
+
 typedef vector< vector<int> > MatrixInt;
 
 void coutmatInt(MatrixInt& M){

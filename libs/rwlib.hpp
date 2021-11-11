@@ -1,4 +1,10 @@
+//------------------------------------------
+// Abel Rosado - 2021
+//------------------------------------------
+
 // Requires <fstream> and <string>
+#include <string>
+#include <fstream>
 
 // Get the number of lines of a file
 int file_ln(string rname){
