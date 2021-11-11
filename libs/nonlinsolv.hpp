@@ -59,7 +59,7 @@ double NewtonRhapsonNum(double (*f)(double), double x0, double tolerance, double
     return 0;
 }
 
-double NewtonRhapsonAnly(double (*f)(double),double (*fp)(double), double x0, double tolerance){
+double NewtonRhapsonAnal(double (*f)(double),double (*fp)(double), double x0, double tolerance){
     double xp = x0; double x; double d; double y;
     double err = 2*tolerance; int i{};
     while (err > tolerance){
@@ -93,12 +93,13 @@ Vector NewtonRhapsonNumSys(int n, Vector& x0, std::function<Vector (Vector&)> f,
 }
 
 Vector NewtonRhapsonAnalSys(int n, Vector& x0, std::function<Vector (Vector&)> f, std::function<Matrix (Vector&)> J, double tolerance){
+    Matrix J( n,vector<double>(n,0));
     double err = 2*tolerance;
     Vector x = x0; Vector xp = x0;
     Vector b(n,0); Vector d(n,0);
     Vector dx(n,0);
     while (err > tolerance){
-        Matrix J0 = J(x);
+        J0 = J(x);
         b = f(x);
         b = ScalMult(b,-1); // independent term
         d = LUSolve(J0, b);
