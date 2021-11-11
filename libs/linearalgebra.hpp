@@ -1,9 +1,13 @@
 // requires <vector> and <math.h>
-// requires "rwlib.h" ( <fstream> and <string> )
-typedef vector<vector<double>> Matrix;  // Create a type called Matrix that is a vector of vectors
+// requires "rwlib.hpp" ( <fstream> and <string> )
+typedef vector<vector<double>> Matrix;    // Create a type called Matrix that is a vector of vectors
 typedef vector<double> Vector;            // Create a type called Vector that is a vector
 
-// displays in console a matrix
+//-----------------------------------------------------------------------------------------
+// Cout tools
+//-----------------------------------------------------------------------------------------
+
+// displays a matrix in console
 void coutmat(Matrix& M){                  // Input is Matrix M passed with & as a pointer
     cout << endl;
     int rows=M.size(); int cols=M[0].size(); // size of M
@@ -13,7 +17,7 @@ void coutmat(Matrix& M){                  // Input is Matrix M passed with & as 
         }cout << endl;                       // next line
     } cout << endl;
 }
-// displays in console a vector
+// displays a vector in console
 void coutvec(Vector& v){                  // Input is Matrix M passed with & as a pointer
     int rows=v.size();                    // Size of the vector.
     for (int i = 0; i < rows; i++){       // for every row
@@ -21,10 +25,9 @@ void coutvec(Vector& v){                  // Input is Matrix M passed with & as 
     } cout << endl;
 }
 
-Vector fillvec(double value, int n){
-    Vector f(n,value);
-    return f;
-}
+//-----------------------------------------------------------------------------------------
+// Matrix and vector operations
+//-----------------------------------------------------------------------------------------
 
 // Multiplies two matrices
 Matrix matprod(Matrix& A, Matrix& B){  // Inputs are Matrices A and B passed with & as a pointer
@@ -35,7 +38,7 @@ Matrix matprod(Matrix& A, Matrix& B){  // Inputs are Matrices A and B passed wit
         return Matrix {0};                      // break
         }
     int Crows=Arows; int Ccols=Bcols;           // dimensions of the product
-    Matrix C( Crows,vector<double>(Ccols,0));   // definition of the product
+    Matrix C( Crows,vector<double>(Ccols,0));   // declaration of the product
     for (int i = 0; i < Crows; i++){            // every row
         for (int j = 0; j < Ccols; j++){        // every column
             for (int k = 0; k < Crows; k++){    // over the common index
@@ -47,7 +50,7 @@ Matrix matprod(Matrix& A, Matrix& B){  // Inputs are Matrices A and B passed wit
 }
 
 // transposes a square matrix
-Matrix transpose(Matrix M){ // Input is a square Matrix M passed with & as a pointer
+Matrix transposeSqr(Matrix& M){ // Input is a square Matrix M passed with & as a pointer
     int rows=M.size(); int cols=M[0].size();  // Size of M
     if (cols != rows){                        // Check if M is square
         cout << "NOT SQUARE" << endl;         // error
@@ -61,23 +64,40 @@ Matrix transpose(Matrix M){ // Input is a square Matrix M passed with & as a poi
     return M;
 }
 
-// Calculates the standard dot product between two vectors
-double dotprod(Vector& X,Vector& Y){        // Inputs are two vectos X and Y of the same size, passed with & as a pointer
-    int Xsize=X.size(); int Ysize=Y.size(); // Size of each vector
-    if (Xsize != Ysize){                    // Of sizes are not equal
-        cout << "NOT SAME SIZE" << endl;    // Error
-        return 0;                           // Break
+// transposes a matrix
+Matrix transpose(Matrix& M){ // Input is a square Matrix M passed with & as a pointer
+    int rows=M.size(); int cols=M[0].size();  // Size of M
+    Matrix T( cols,vector<double>(rows,0));   // Initialize the transpose
+    for (int i = 0; i < cols; i++){           // for every row
+        for (int j = 0; j < rows; j++){       // for every column
+            T[i][j] = M[j][i];                // Define the transpose
         }
-    double prod = 0;                        // Define the output
-    for (int i = 0; i < Xsize; i++){        // For every component
-        prod += X[i]*Y[i];                  // We multiply the entries and sum
     }
-    return prod;
+    return T;
 }
 
-// calculates the standard norm of a vector
-double norm(Vector& X){         // Input is a Vector, passed with & as a pointer
-    return sqrt(dotprod(X,X));  // Calculate the norm as sqrt(X*X)
+// Multiplies a vector A by a scalar lambda
+Vector ScalMult(Vector& A, double lambda){
+    int n = A.size();
+    Vector B(n,0);                          // Define the solution
+    for (int i = 0; i < n; i++){            // For every component
+        B[i] = lambda*A[i];
+    }
+    return B;
+}
+
+// Returns the component-wise sum of two vectors
+// A and B must be the same size
+Vector VecSum(Vector& A, Vector& B){   // A_i*B_i
+    int An = A.size(); int Bn = B.size();    // Size of each vector
+    if (An != Bn){                           // Check if they are the same size
+        cout << "NOT SAME SIZE" << endl;     // error
+        return {};}                          // break
+    Vector C(An,0);                          // Define the solution
+    for (int i = 0; i < An; i++){            // For every component
+        C[i] = A[i]+B[i];                    // Multiplication
+    }
+    return C;
 }
 
 // Returns the difference of two vectors
@@ -94,7 +114,7 @@ Vector VecDiff(Vector& A, Vector& B){  // A-B
     return C;
 }
 
-// Returns the component-wise multiplication of two vectors
+// Multiplies two vector component-wise
 // A and B must be the same size
 Vector VecMult(Vector& A, Vector& B){   // A_i*B_i
     int An = A.size(); int Bn = B.size();    // Size of each vector
@@ -120,6 +140,101 @@ Vector VecDiv(Vector& A, Vector& B){  // A_i/B_i
         C[i] = A[i]/B[i];                    // Divission
     }
     return C;
+}
+
+//-----------------------------------------------------------------------------------------
+// Creation and conversion tools
+//-----------------------------------------------------------------------------------------
+
+// Creates an n-vector with all components with a certain value
+Vector VecFull(double value, int n){
+    Vector v(n,value);
+    return v;
+}
+
+// Creates a matrix of n rows and m columns with all components having the same value
+Matrix MatFull(double value, int n, int m){
+    Matrix M(n,vector<double>(m,value));
+    return M;
+}
+
+Matrix MIdentity(int n){
+    Matrix I(n,vector<double>(n,0));
+    for (int i = 0; i < n; i++){
+        I[i][i] = 1;
+    }
+    return I;
+}
+
+Matrix Vec2Mat(Vector& V, bool col = 0){
+    int n = V.size();
+    Matrix M(1,vector<double>(n,0));
+    M[0] = V;
+    if (col){
+        M = transpose(M);
+    }
+    return M;
+}
+
+// Creates a diagonal matrix with a vector
+Matrix MDiag(Vector& V){
+    int n = V.size();
+    Matrix D(n,vector<double>(n,0));
+    for (int i = 0; i < n; i++){
+        D[i][i] = V[i];
+    }
+    return D;
+}
+
+// Returns the diagonal of a matrix as a vector
+// A must be square
+Vector MatrixDiag(Matrix& A){
+    int n=A.size(); int cols=A[0].size();  // Size of M
+    if (cols != n ){                       // Check if M is square
+        cout << "NOT SQUARE" << endl;      // error
+        return {};}                        // break
+    Vector D(n,0);                         // Define the output
+    for (int i = 0; i < n; i++){           // for every line or row
+        D[i] = A[i][i];}                   // D_i = A_ii
+    return D;
+}
+
+//-----------------------------------------------------------------------------------------
+// Metric tools
+//-----------------------------------------------------------------------------------------
+
+// Calculates the standard dot product between two vectors
+double dotprod(Vector& X,Vector& Y){        // Inputs are two vectos X and Y of the same size, passed with & as a pointer
+    int Xsize=X.size(); int Ysize=Y.size(); // Size of each vector
+    if (Xsize != Ysize){                    // Of sizes are not equal
+        cout << "NOT SAME SIZE" << endl;    // Error
+        return 0;                           // Break
+        }
+    double prod = 0;                        // Define the output
+    for (int i = 0; i < Xsize; i++){        // For every component
+        prod += X[i]*Y[i];                  // We multiply the entries and sum
+    }
+    return prod;
+}
+
+// Calculates the bilinear form of two vectors defined by A
+double Bilinear(Vector& X,Vector& Y, Matrix& A){
+    int nX = X.size(); int nY = Y.size();
+    int rows=A.size(); int cols=A[0].size();        // Size of M
+    if (cols != rows || nX != rows || nY != cols){  // Check if M is square
+        cout << "NOT RIGHT SIZE" << endl;           // error
+        return 0;                                   // break
+        }
+    Matrix x = Vec2Mat(X, 0);  // X row matrix 
+    Matrix y = Vec2Mat(Y, 1);  // Y column matriz
+    Matrix a = matprod(x,A);   // xA
+    Matrix p = matprod(a,y);   // (xA)y
+    return p[0][0];
+}
+
+// calculates the standard norm of a vector
+double norm(Vector& X){         // Input is a Vector, passed with & as a pointer
+    return sqrt(dotprod(X,X));  // Calculate the norm as sqrt(X*X)
 }
 
 // calculates the angle between two vectors
@@ -164,6 +279,10 @@ Matrix gramschmidt(Matrix& M){ // M contains vectors as columns
     G = transpose(G); // to have vectors as columns
     return G;
 }
+
+//-----------------------------------------------------------------------------------------
+// Lineal system of equations solve, Ax = b
+//-----------------------------------------------------------------------------------------
 
 // Decomposes a matrix into upper and lower triangular form
 // Matrix L{} and Matrix U{} must be zeroes
@@ -272,19 +391,6 @@ Vector TrDiagSolve(Vector& a,Vector& b,Vector& c, Vector& f, bool out = 0, strin
         x[i] = (z[i]-c[i]*x[i+1])/beta[i];
         }
     return x;   // Return the solution
-}
-
-// Returns the diagonal of a matrix as a vector
-// A must be square
-Vector MatrixDiag(Matrix& A){
-    int n=A.size(); int cols=A[0].size();  // Size of M
-    if (cols != n ){                       // Check if M is square
-        cout << "NOT SQUARE" << endl;      // error
-        return {};}                        // break
-    Vector D(n,0);                         // Define the output
-    for (int i = 0; i < n; i++){           // for every line or row
-        D[i] = A[i][i];}                   // D_i = A_ii
-    return D;
 }
 
 // Solves Ax=b using Jacobi's or Gauss-Seidel's iterative method

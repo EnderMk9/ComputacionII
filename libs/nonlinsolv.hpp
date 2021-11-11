@@ -1,5 +1,6 @@
 // Library to solve f=0 for non-linear functions
-// requires calculus.h for derivative
+// requires calculus.hpp for derivative
+// requires linealgebra.hpp for multivariable functions
 
 double bisection(double (*f)(double), double x1, double x2, double tolerance){
     if (f(x1)*f(x2)>0){
@@ -68,5 +69,40 @@ double NewtonRhapsonAnly(double (*f)(double),double (*fp)(double), double x0, do
         i++;
     }
     cout << "Newton analytic iterations : " << i << endl;
+    return x;
+}
+
+Vector NewtonRhapsonNumSys(int n, Vector& x0, std::function<Vector (Vector&)> f, double tolerance){
+    Matrix J = JacobianNum(n,x0, f, 0.1, tolerance);
+    double err = 2*tolerance;
+    Vector x = x0; Vector xp = x0;
+    Vector b(n,0); Vector d(n,0);
+    Vector dx(n,0);
+    while (err > tolerance){
+        b = f(x);
+        b = ScalMult(b,-1); // independent term
+        d = LUSolve(J, b);
+        x = VecSum(x,d);
+        dx = VecDiff(x,xp);
+        err = norm(dx);
+        xp = x;
+    }
+    return x;
+}
+
+Vector NewtonRhapsonAnalSys(int n, Vector& x0, std::function<Vector (Vector&)> f, std::function<Matrix (Vector&)> J, double tolerance){
+    double err = 2*tolerance;
+    Vector x = x0; Vector xp = x0;
+    Vector b(n,0); Vector d(n,0);
+    Vector dx(n,0);
+    while (err > tolerance){
+        b = f(x);
+        b = ScalMult(b,-1); // independent term
+        d = LUSolve(J, b);
+        x = VecSum(x,d);
+        dx = VecDiff(x,xp);
+        err = norm(dx);
+        xp = x;
+    }
     return x;
 }

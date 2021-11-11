@@ -1,5 +1,8 @@
 // library for dealing with functions, evaluations, definitions, etc
 
+// include <functional>
+// use using namespace std::placeholders;
+
 // function to evaluate a single variable function in an interval with d subintervals, d+1 divisions
 // double t [d+1] {}; double y [d+1] {}; are requiered to be defined previously and passed as an imput
 // there is no return because arrays are directly modified in memory inside functions
