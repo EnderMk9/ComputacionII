@@ -73,12 +73,13 @@ double NewtonRhapsonAnly(double (*f)(double),double (*fp)(double), double x0, do
 }
 
 Vector NewtonRhapsonNumSys(int n, Vector& x0, std::function<Vector (Vector&)> f, double tolerance){
-    Matrix J = JacobianNum(n,x0, f, 0.1, tolerance);
+    Matrix J( n,vector<double>(n,0));
     double err = 2*tolerance;
     Vector x = x0; Vector xp = x0;
     Vector b(n,0); Vector d(n,0);
     Vector dx(n,0);
     while (err > tolerance){
+        J = JacobianNum(n,x, f, 0.1, tolerance);
         b = f(x);
         b = ScalMult(b,-1); // independent term
         d = LUSolve(J, b);
@@ -87,6 +88,7 @@ Vector NewtonRhapsonNumSys(int n, Vector& x0, std::function<Vector (Vector&)> f,
         err = norm(dx);
         xp = x;
     }
+    //coutmat(J);
     return x;
 }
 
@@ -96,9 +98,10 @@ Vector NewtonRhapsonAnalSys(int n, Vector& x0, std::function<Vector (Vector&)> f
     Vector b(n,0); Vector d(n,0);
     Vector dx(n,0);
     while (err > tolerance){
+        Matrix J0 = J(x);
         b = f(x);
         b = ScalMult(b,-1); // independent term
-        d = LUSolve(J, b);
+        d = LUSolve(J0, b);
         x = VecSum(x,d);
         dx = VecDiff(x,xp);
         err = norm(dx);

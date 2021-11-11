@@ -50,5 +50,6 @@ Matrix JacobianNum(int n, Vector& x0, std::function<Vector (Vector&)> f, double 
                                                  // respect to the j-th coordinate
     }
     J = transposeSqr(J);       // Transpose the matrix because rows must vary the coordenate
+    
     return J;
 }
