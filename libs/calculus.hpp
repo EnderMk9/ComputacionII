@@ -35,8 +35,8 @@ double derivativeLoopCD(double (*f)(double), double x0, double h0, double tolera
     return d;                           
 }
 
-// best used when knowing the order of magnitude of f⁽³⁾(x_0) and higher, because then you can
-// estimate the error and this function requieres less iterations
+// best used when knowing the order of magnitude of f⁽³⁾(x_0), because then you can
+// estimate the error and optimize h and this function requieres less iterations
 double derivativeCD(double (*f)(double), double x0, double h){
     return (f(x0+h)-f(x0-h))/(2*h); // approximate value of the derivative using second order formula
 }
@@ -59,8 +59,8 @@ double derivative2LoopCD(double (*f)(double), double x0, double h0, double toler
     return d;                           
 }
 
-// best used when knowing the order of magnitude of f⁽⁴⁾(x_0) and higher, because then you can
-// estimate the error and this function requieres less iterations
+// best used when knowing the order of magnitude of f⁽⁴⁾(x_0), because then you can
+// estimate the error and optimize h and this function requieres less iterations
 double derivative2CD(double (*f)(double), double x0, double h){
     return (f(x0+h)+f(x0-h)-2*f(x0))/(h*h);
 }
@@ -86,8 +86,8 @@ double partialLoopCD(int n, double (*f)(Vector&), int i, Vector& x0, double h0, 
     return d;                           
 }
 
-// best used when knowing the order of magnitude of f⁽³⁾(x_0) and higher, because then you can
-// estimate the error and this function requieres less iterations
+// best used when knowing the order of magnitude of f⁽³⁾_i(x_0), because then you can
+// estimate the error and optimize h and this function requieres less iterations
 double partialCD(int n, double (*f)(Vector&), int i, Vector& x0, double h){
     Vector hv(n,0); hv[i] = h;                 // Variation
     Vector dsum = VecSum(x0,hv);               // x0+h
@@ -121,8 +121,6 @@ Vector partialLoopCDVec(int n,int i,std::function<Vector (Vector&)> f,Vector& x0
     return d;
 }
 
-// best used when knowing the order of magnitude of f⁽³⁾(x_0) and higher, because then you can
-// estimate the error and this function requieres less iterations
 Vector partialCDVec(int n,int i,std::function<Vector (Vector&)> f,Vector& x0,double h){
     Vector hv(n,0);  hv[i] = h;               // Variation
     Vector dsum = VecSum(x0,hv);              // x0+h

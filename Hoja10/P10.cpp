@@ -14,7 +14,7 @@ Vector f(Vector& x){
 
 int main(){
     Vector x0 = {1,1,1};
-    Vector f0 = NewtonNumSys(3,x0,f,0.001,10e-8,1);
+    Vector f0 = NewtonNumSys(3,x0,f,10e-6,10e-8,0);
     coutvec(f0);
 }
 
