@@ -23,11 +23,11 @@
 // Tal que entonces h* = \3th-root(3e|f(x_0)| / |f⁽³⁾(x_0)|)
 
 // Calculates derivative using a loop to have an error less than the tolerance
-double derivativeLoopCD(double (*f)(double), double x0, double h0, double tolerance){
+double derivativeLoopCD(double (*f)(double), double x0, double h0, double tol){
     double h   = h0;            // initial variation of x
-    double err = 2*tolerance;   // initual value of error for the while to work
+    double err = 2*tol;         // initual value of error for the while to work
     double dp{}; double d;      // each term in the succesion
-    while (err > tolerance){    // while the difference between terms is greater that the tolerance
+    while (err > tol){          // while the difference between terms is greater that the tolerance
         d = (f(x0+h)-f(x0-h))/(2*h);
         err = abs(d-dp);                // calculate the difference between the previous iteration
         h = h/2; dp = d;                // make h smaller and update dp
@@ -47,11 +47,11 @@ double derivativeCD(double (*f)(double), double x0, double h){
 // h = 0, sumar ambas expresiones y despejar f''(x_0)
 
 // Calculates derivative using a loop to have an error less than the tolerance
-double derivative2LoopCD(double (*f)(double), double x0, double h0, double tolerance){
+double derivative2LoopCD(double (*f)(double), double x0, double h0, double tol){
     double h   = h0;            // initial variation of x
-    double err = 2*tolerance;   // initual value of error for the while to work
+    double err = 2*tol;         // initual value of error for the while to work
     double dp{}; double d;      // each term in the succesion
-    while (err > tolerance){    // while the difference between terms is greater that the tolerance
+    while (err > tol){          // while the difference between terms is greater that the tolerance
         d = (f(x0+h)+f(x0-h)-2*f(x0))/(h*h);
         err = abs(d-dp);                // calculate the difference between the previous iteration
         h = h/2; dp = d;                // make h smaller and update dp
@@ -68,13 +68,13 @@ double derivative2CD(double (*f)(double), double x0, double h){
 // HIGHER DIMENSIONS
 
 // Partial derivative of a scalar function f with respect to the i-th coordenate
-double partialLoopCD(int n, double (*f)(Vector&), int i, Vector& x0, double h0, double tolerance){
+double partialLoopCD(int n, double (*f)(Vector&), int i, Vector& x0, double h0, double tol){
     Vector hv(n,0);              // h variation vector
     double h = h0;               // magnitude of hv
     hv[i] = h;                   // initial variation of x_i
-    double err = 2*tolerance;   // initual value of error for the while to work
+    double err = 2*tol;          // initual value of error for the while to work
     double dp{}; double d; Vector dsum(n,0); Vector ddif(n,0); double ff; double fb; // declaration
-    while (err > tolerance){    // while the difference between terms is greater that the tolerance
+    while (err > tol){           // while the difference between terms is greater that the tolerance
         dsum = VecSum(x0,hv);           //x0+h
         ddif = VecDiff(x0,hv);          //x0-h                         
         ff = f(dsum); fb = f(ddif);     // eval in f

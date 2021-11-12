@@ -6,13 +6,11 @@
 // requires calculus.hpp for derivative
 // requires linealgebra.hpp for multivariable functions
 
-double bisection(double (*f)(double), double x1, double x2, double tolerance){
+double bisection(double (*f)(double), double x1, double x2, double tol){
     if (f(x1)*f(x2)>0){
         cout << "ERROR POINTS NOT VALID" << endl; return NAN;}
-    double x3;
-    double err = 2*tolerance;
-    int i{};
-    while (err > tolerance){
+    double x3; double err = 2*tol; //int i{};
+    while (err > tol){
         x3 = (x1+x2)/2;
         if (f(x1)*f(x3) <0){
             x2 = x3;
@@ -20,59 +18,58 @@ double bisection(double (*f)(double), double x1, double x2, double tolerance){
             x1 = x3;
         }
         err = abs(x2-x1);
-        i++;
+        //i++;
     }
-    cout << "bisection iterations : " << i << endl;
+    //cout << "bisection iterations : " << i << endl;
     return x3;
 }
 
-double secant(double (*f)(double), double x1, double x2, double tolerance){
-    double x3; double err = 2*tolerance;
-    int i{};
-    while (err > tolerance){
+double secant(double (*f)(double), double x1, double x2, double tol){
+    double x3; double err = 2*tol; //int i{};
+    while (err > tol){
         x3 = x2-f(x2)*((x2-x1)/(f(x2)-f(x1)));
         x1 = x2; x2 = x3; err = abs(x1-x2);
-        i++;
+        //i++;
     }
-    cout << "secant iterations : " << i << endl;
+    //cout << "secant iterations : " << i << endl;
     return x3;
 }
 
-double NewtonNum(double (*f)(double), double x0, double tolerance, double h, bool loop){
+double NewtonNum(double (*f)(double), double x0, double tol, double h, bool loop){
     double xp = x0; double x; double d; double y;
-    double err = 2*tolerance; int i{};
+    double err = 2*tol; //int i{};
     if (loop){
-        while (err > tolerance){
-            y = f(xp); d = derivativeLoopCD(f, xp, h, tolerance);
+        while (err > tol){
+            y = f(xp); d = derivativeLoopCD(f, xp, h, tol);
             x = xp - y/d;
             err = abs(xp-x); xp = x;
-            i++;
+            //i++;
         }
-        cout << "Newton devloop iterations : " << i << endl;
+        //cout << "Newton devloop iterations : " << i << endl;
         return x;
     } else if (!loop){
-        while (err > tolerance){
+        while (err > tol){
             y = f(xp); d = derivativeCD(f, xp, h);
             x = xp - y/d;
             err = abs(xp-x); xp = x;
-            i++;
+            //i++;
         }
-        cout << "Newton single diff iterations : " << i << endl;
+        //cout << "Newton single diff iterations : " << i << endl;
         return x;
     }
     return 0;
 }
 
-double NewtonAnal(double (*f)(double),double (*fp)(double), double x0, double tolerance){
+double NewtonAnal(double (*f)(double),double (*fp)(double), double x0, double tol){
     double xp = x0; double x; double d; double y;
-    double err = 2*tolerance; int i{};
-    while (err > tolerance){
+    double err = 2*tol; //int i{};
+    while (err > tol){
         y = f(xp); d = fp(xp);
         x = xp - y/d;
         err = abs(xp-x); xp = x;
-        i++;
+        //i++;
     }
-    cout << "Newton analytic iterations : " << i << endl;
+    //cout << "Newton analytic iterations : " << i << endl;
     return x;
 }
 
@@ -82,27 +79,21 @@ Vector NewtonNumSys(int n,Vector& x0,std::function<Vector(Vector&)> f,double h, 
     Vector x = x0; Vector xp = x0;
     Vector b(n,0); Vector d(n,0);
     Vector dx(n,0);
-    if (loop){
+    if (loop){                                  // PartialLoop option
         while (err > tol){
-            J = JacobianNum(n,x, f, h, tol,1);
-            b = f(x);
-            b = ScalMult(b,-1); // independent term
-            d = LUSolve(J, b);
-            x = VecSum(x,d);
-            dx = VecDiff(x,xp);
-            err = norm(dx);
-            xp = x;
+            J = JacobianNum(n,x, f, h, tol,1);  // Calculate Jacobian
+            b = f(x); b = ScalMult(b,-1);       // independent term
+            d = LUSolve(J, b); x = VecSum(x,d); // Solution
+            dx = VecDiff(x,xp); err = norm(dx); // error
+            xp = x;                             // update xp
         }
-    }else if (not loop){
+    }else if (not loop){                        // Partial option
         while (err > tol){
-            J = JacobianNum(n,x, f, h);
-            b = f(x);
-            b = ScalMult(b,-1); // independent term
-            d = LUSolve(J, b);
-            x = VecSum(x,d);
-            dx = VecDiff(x,xp);
-            err = norm(dx);
-            xp = x;
+            J = JacobianNum(n,x, f, h);         // Calculate Jacobian
+            b = f(x); b = ScalMult(b,-1);       // independent term
+            d = LUSolve(J, b); x = VecSum(x,d); // Solution
+            dx = VecDiff(x,xp); err = norm(dx); // error
+            xp = x;                             // update xp
         }
     }
     //coutmat(J);
@@ -116,14 +107,11 @@ Vector NewtonAnalSys(int n,Vector& x0,std::function<Vector(Vector&)> f,std::func
     Vector b(n,0); Vector d(n,0);
     Vector dx(n,0);
     while (err > tol){
-        J0 = J(x);
-        b = f(x);
-        b = ScalMult(b,-1); // independent term
-        d = LUSolve(J0, b);
-        x = VecSum(x,d);
-        dx = VecDiff(x,xp);
-        err = norm(dx);
-        xp = x;
+        J0 = J(x);                           // Calculate Jacobian
+        b = f(x); b = ScalMult(b,-1);        // independent term
+        d = LUSolve(J0, b); x = VecSum(x,d); // Solution
+        dx = VecDiff(x,xp); err = norm(dx);  // error
+        xp = x;                              // update xp
     }
     return x;
 }
