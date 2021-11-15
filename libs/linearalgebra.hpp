@@ -4,32 +4,6 @@
 
 // requires <vector> and <math.h>
 // requires "rwlib.hpp" ( <fstream> and <string> )
-#include <vector>
-typedef vector<vector<double>> Matrix;    // Create a type called Matrix that is a vector of vectors
-typedef vector<double> Vector;            // Create a type called Vector that is a vector
-
-//-----------------------------------------------------------------------------------------
-// Cout tools
-//-----------------------------------------------------------------------------------------
-
-// displays a matrix in console
-void coutmat(Matrix& M){                  // Input is Matrix M passed with & as a pointer
-    cout << endl;
-    int rows=M.size(); int cols=M[0].size(); // size of M
-    for (int i = 0; i < rows; i++){          // for every row
-        for (int j = 0; j < cols; j++){      // for every column
-            cout << M[i][j] << " ";          // Show Mij index of M followed by a space
-        }cout << endl;                       // next line
-    } cout << endl;
-}
-
-// displays a vector in console
-void coutvec(Vector& v){                  // Input is Matrix M passed with & as a pointer
-    int rows=v.size();                    // Size of the vector.
-    for (int i = 0; i < rows; i++){       // for every row
-            cout << v[i] << " ";          // Show Mij index of M followed by a space
-    } cout << endl;
-}
 
 //-----------------------------------------------------------------------------------------
 // Matrix and vector operations
@@ -47,7 +21,7 @@ Matrix matprod(Matrix& A, Matrix& B){  // Inputs are Matrices A and B passed wit
     Matrix C( Crows,vector<double>(Ccols,0));   // declaration of the product
     for (int i = 0; i < Crows; i++){            // every row
         for (int j = 0; j < Ccols; j++){        // every column
-            for (int k = 0; k < Crows; k++){    // over the common index
+            for (int k = 0; k < Acols; k++){    // over the common index
                 C[i][j] += A[i][k]*B[k][j];     // multiplication and sum
             }
         }
@@ -152,15 +126,13 @@ Vector VecDiv(Vector& A, Vector& B){  // A_i/B_i
 // Creation and conversion tools
 //-----------------------------------------------------------------------------------------
 
-// Creates an n-vector with all components with a certain value
-Vector VecFull(double value, int n){
-    Vector v(n,value);
-    return v;
-}
-
-// Creates a matrix of n rows and m columns with all components having the same value
-Matrix MatFull(double value, int n, int m){
-    Matrix M(n,vector<double>(m,value));
+Matrix Vec2Mat(Vector& V, bool col = 0){
+    int n = V.size();
+    Matrix M(1,vector<double>(n,0));
+    M[0] = V;
+    if (col){
+        M = transpose(M);
+    }
     return M;
 }
 
@@ -170,16 +142,6 @@ Matrix MIdentity(int n){
         I[i][i] = 1;
     }
     return I;
-}
-
-Matrix Vec2Mat(Vector& V, bool col = 0){
-    int n = V.size();
-    Matrix M(1,vector<double>(n,0));
-    M[0] = V;
-    if (col){
-        M = transpose(M);
-    }
-    return M;
 }
 
 // Creates a diagonal matrix with a vector
@@ -372,18 +334,17 @@ Vector TrDiagSolve(Vector& a,Vector& b,Vector& c, Vector& f, bool out = 0, strin
         cout << "INCORRECT SIZE" << endl;      // error
         return {};}                                         // break
     // coutmat(L); coutmat(U);
-    Vector alpha(Sa,0); Vector beta(Sb,0);// Define the vectors for the decomposition
+    Vector alpha(Sb,0); Vector beta(Sb,0);// Define the vectors for the decomposition
     beta[0] = b[0];
     for (int i = 1; i < Sb; i++){
         alpha[i-1]=a[i-1]/beta[i-1];
         beta[i] = b[i]-alpha[i-1]*c[i-1];
     }
     if (out){        
-            double arrbeta[Sb]{}; 
-            double arralpha[Sb]{}; arralpha[Sb-1]=NAN;
-            copy(alpha.begin(), alpha.end(), arralpha);
-            copy(beta.begin(), beta.end(), arrbeta);
-            d_w_file_2cols(wname, arralpha,arrbeta,Sb);
+            Matrix data = MatFull(0, 2, Sb);
+            data[0] = alpha; data[1] = beta;
+            data = transpose(data);
+            write_mat_double("STrRes.dat", data);
         }
     //coutvec(alpha); coutvec(beta);
     Vector z(Sf,0); Vector x(Sf,0);       // Define the vectors to solve
@@ -430,13 +391,13 @@ Vector JacobiSolve(Matrix& A, Vector& b, Vector& x0, double tolerance, bool prin
         Deltax = VecDiff(x1, x0);
         epsilon = norm(Deltax);
         //cout << epsilon << endl;
-        if (print){
+/*         if (print){
             acout[0] = double(k);
             copy(x0.begin(), x0.end(), acout+1);
             copy(x1.begin(), x1.end(), acout+n+1);
             copy(Deltax.begin(), Deltax.end(), acout+n+n+1);
             acout[3*n+1] = epsilon;
-            d_wa_file_csv("JacobiResult.csv", acout, 3*n+2);}
+            d_wa_file_csv("JacobiResult.csv", acout, 3*n+2);} */
         x0 = x1;
         k++;    // advance iteration
     }
@@ -469,13 +430,13 @@ Vector GaussSeidelSolve(Matrix& A, Vector& b, Vector& x0, double tolerance, bool
         }
         Deltax = VecDiff(x1, x0);
         epsilon = norm(Deltax);
-        if (print){
+/*         if (print){
             acout[0] = double(k);
             copy(x0.begin(), x0.end(), acout+1);
             copy(x1.begin(), x1.end(), acout+n+1);
             copy(Deltax.begin(), Deltax.end(), acout+n+n+1);
             acout[3*n+1] = epsilon;
-            d_wa_file_csv("GaussSeidelResult.csv", acout, 3*n+2);}
+            d_wa_file_csv("GaussSeidelResult.csv", acout, 3*n+2);} */
         k++;    // advance iteration
     }
     return x1;   // Return the solution
