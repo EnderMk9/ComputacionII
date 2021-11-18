@@ -122,6 +122,14 @@ Vector VecDiv(Vector& A, Vector& B){  // A_i/B_i
     return C;
 }
 
+double DiagonalProd(Matrix& U){             
+    int n=U.size(); double D = U[0][0];
+    for (int i = 1; i < n; i++){
+        D = D*U[i][i];
+    }
+    return D;
+}
+
 //-----------------------------------------------------------------------------------------
 // Creation and conversion tools
 //-----------------------------------------------------------------------------------------
@@ -295,9 +303,22 @@ void LU(Matrix& A, Matrix& L, Matrix& U){
         }
     }
 }
+
+// Calculates the determinant making use of det M = det L det U
+// and the determinant of a triangular matrix is the product of 
+// the elements of the diagonal, L's diagonal is full of ones so
+// det M = det U = Π_i^n U_ii.
+double determinant(Matrix& M){             
+    int n=M.size();                        // Size of M
+    Matrix L( n,vector<double>(n,0));      // Lower matrix of 0s
+    Matrix U( n,vector<double>(n,0));      // Upper matrix of 0s
+    LU(M,L,U);
+    return DiagonalProd(U);
+}
+
 // Solves Ax=b using LU decomposition
 // Matrix A must be non-singular, square and b same size as A
-Vector LUSolve(Matrix& A, Vector& b){
+Vector LUSolve(Matrix& A, Vector& b, bool out = 0){
     int n=A.size(); int cols=A[0].size();  // Size of M
     int bsize = b.size();                  // Size of b
     if (cols != n || bsize != n){                           // Check if M is square
@@ -306,7 +327,10 @@ Vector LUSolve(Matrix& A, Vector& b){
     Matrix L( n,vector<double>(n,0));      // Lower matrix of 0s
     Matrix U( n,vector<double>(n,0));      // Upper matrix of 0s
     LU(A,L,U);                             // LU decomposition
-    // coutmat(L); coutmat(U);
+    if (out){
+        cout << "L = "; coutmat(L);
+        cout << "U = "; coutmat(U);
+    }
     Vector z(n,0); Vector x(n,0);       // Define the vectors to solve
     for(int i = 0; i < n; i++){         // First solve Lz=b
         z[i] = b[i];

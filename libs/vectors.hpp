@@ -21,7 +21,8 @@ typedef vector<string> SVector;
 //------------------------------------------
 
 // displays a matrix in console
-void coutmat(Matrix& M){                  // Input is Matrix M passed with & as a pointer
+void coutmat(Matrix& M, int pres = 16){      // Input is Matrix M passed with & as a pointer
+    cout.precision(pres);
     cout << endl;
     int rows=M.size(); int cols=M[0].size(); // size of M
     for (int i = 0; i < rows; i++){          // for every row
@@ -32,14 +33,15 @@ void coutmat(Matrix& M){                  // Input is Matrix M passed with & as 
 }
 
 // displays a vector in console
-void coutvec(Vector& v){                  // Input is Matrix M passed with & as a pointer
+void coutvec(Vector& v, int pres = 16){   // Input is Matrix M passed with & as a pointer
     int rows=v.size();                    // Size of the vector.
+    cout.precision(pres);
     for (int i = 0; i < rows; i++){       // for every row
             cout << v[i] << " ";          // Show Mij index of M followed by a space
     } cout << endl;
 }
 
-void Scoutvec(SVector& v){                  // Input is Matrix M passed with & as a pointer
+void Scoutvec(SVector& v){                // Input is Matrix M passed with & as a pointer
     int rows=v.size();                    // Size of the vector.
     for (int i = 0; i < rows; i++){       // for every row
             cout << v[i] << " ";          // Show Mij index of M followed by a space
