@@ -35,7 +35,7 @@ double secant(double (*f)(double), double x1, double x2, double tol){
     return x3;
 }
 
-double NewtonNum(double (*f)(double), double x0, double tol, double h, bool loop){
+double NewtonNum(double (*f)(double), double x0, double tol, double h, bool loop, int& i){
     double xp = x0; double x; double d; double y;
     double err = 2*tol; //int i{};
     if (loop){
@@ -52,7 +52,7 @@ double NewtonNum(double (*f)(double), double x0, double tol, double h, bool loop
             y = f(xp); d = derivativeCD(f, xp, h);
             x = xp - y/d;
             err = abs(xp-x); xp = x;
-            //i++;
+            i++;
         }
         //cout << "Newton single diff iterations : " << i << endl;
         return x;
@@ -60,14 +60,14 @@ double NewtonNum(double (*f)(double), double x0, double tol, double h, bool loop
     return 0;
 }
 
-double NewtonAnal(double (*f)(double),double (*fp)(double), double x0, double tol){
+double NewtonAnal(double (*f)(double),double (*fp)(double), double x0, double tol, int& i){
     double xp = x0; double x; double d; double y;
-    double err = 2*tol; //int i{};
+    double err = 2*tol;
     while (err > tol){
         y = f(xp); d = fp(xp);
         x = xp - y/d;
         err = abs(xp-x); xp = x;
-        //i++;
+        i++;
     }
     //cout << "Newton analytic iterations : " << i << endl;
     return x;

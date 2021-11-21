@@ -15,6 +15,7 @@ using namespace std::placeholders;
 #include "vectors.hpp" // Library for dealing with vectors and matrices smoothly
 
 #include "rwlib.hpp"            // IO library
+#include "interv.hpp"           // Function for dealing with intervals
 #include "funlib.hpp"           // Function eval library
 #include "linearalgebra.hpp"    // Linear Algebra library
 #include "calculus.hpp"         // Calculus library
