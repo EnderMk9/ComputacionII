@@ -126,14 +126,30 @@ double Bilinear(Vector& X,Vector& Y, Matrix& A){
     return p[0][0];
 }
 
-// calculates the standard norm of a vector
-double norm(Vector& X){         // Input is a Vector, passed with & as a pointer
-    return sqrt(dotprod(X,X));  // Calculate the norm as sqrt(X*X)
+// calculates the standard p-norm of an array
+double norm(Vector& X, int p = 2, bool inf = 0){
+    if (inf){
+        int n = X.size();
+        Vector absX = X;
+        for (int i = 0; i < n; i++){
+            absX[i] = abs(X[i]);
+        }
+        return *max_element(absX.begin(), absX.end());
+    }else if (!inf){
+        int n = X.size(); double sum{};
+        for (int i = 0; i < n; i++){
+            sum += pow(X[i],p);
+        }
+        //cout << sum << endl;
+        return pow(sum,1.0/p);
+    }
+    return {};
 }
 
 // calculates the angle between two vectors
 double angle(Vector& X,Vector& Y){ // Inputs are two vectors X and Y, passed with & as a pointer
-    double cos_a = dotprod(X,Y)/(norm(X)*norm(Y)); // definition of the cosine of the angle
+    double cos_a = dotprod(X,Y)/(sqrt(dotprod(X,X))*sqrt(dotprod(Y,Y)));
+    // definition of the cosine of the angle
     double angle = acos(cos_a);                    // acos to obtain the angle (in radians)
     return angle;
 }
@@ -289,7 +305,7 @@ Vector TrDiagSolve(Vector& a,Vector& b,Vector& c, Vector& f, bool out = 0, strin
 // and the equation still holds. Dominant : A_{ii} > \sum_{j\neq i}{A_{ij}}
 // It is necesary to provide an initial point to begin the iteration
 // A good one is Vector AD = MatrixDiag(A); Vector x0 = VecDiv(b,AD);
-Vector JacobiSolve(Matrix& A, Vector& b, Vector& x0, double tolerance, bool print = 0){
+Vector JacobiSolve(Matrix& A, Vector& b, Vector x0, double tol, int& k, int p = 2, bool inf = 0){
     int n=A.size(); int cols=A[0].size();  // Size of M
     int bsize = b.size();                  // Size of b
     if (cols != n || bsize != n){                           // Check if M is square
@@ -297,39 +313,25 @@ Vector JacobiSolve(Matrix& A, Vector& b, Vector& x0, double tolerance, bool prin
         return {};}                                         // break
     Vector x1(n,0);                 // Definition for the next iteration
     Vector Deltax(n,0);             // Difference between iterations
-    double acout[3*n+2]{};
-    double epsilon = 2*tolerance;   // |x^n+1-x^n|<\epsilon
-    int k{};    // initialize iteration count
-    while (epsilon > tolerance){
-        //cout << "k: " << k << endl;
+    double epsilon = 2*tol;   // |x^n+1-x^n|<\epsilon
+    while (epsilon > tol){
+        k++;    // advance iteration
         x1 = b;
         for (int i = 0; i < n; i++){
             for (int j = 0; j < n; j++){
                 if (j != i){
                     x1[i] -= A[i][j]*x0[j];
                 }}
-            //cout << "i: " << i << endl;
             x1[i] = x1[i]/A[i][i];
         }
         Deltax = VecDiff(x1, x0);
-        epsilon = norm(Deltax);
-        //cout << epsilon << endl;
-/*         if (print){
-            acout[0] = double(k);
-            copy(x0.begin(), x0.end(), acout+1);
-            copy(x1.begin(), x1.end(), acout+n+1);
-            copy(Deltax.begin(), Deltax.end(), acout+n+n+1);
-            acout[3*n+1] = epsilon;
-            d_wa_file_csv("JacobiResult.csv", acout, 3*n+2);} */
+        epsilon = norm(Deltax,p,inf);
         x0 = x1;
-        k++;    // advance iteration
     }
-    //cout << "Success!" << endl;
-    //coutvec(x1);
     return x1;   // Return the solution
 }
 
-Vector GaussSeidelSolve(Matrix& A, Vector& b, Vector& x0, double tolerance, bool print = 0){
+Vector GaussSeidelSolve(Matrix& A, Vector& b, Vector x0, double tol, int& k,int p = 2, bool inf = 0){
     int n=A.size(); int cols=A[0].size();  // Size of M
     int bsize = b.size();                  // Size of b
     if (cols != n || bsize != n){                           // Check if M is square
@@ -337,10 +339,9 @@ Vector GaussSeidelSolve(Matrix& A, Vector& b, Vector& x0, double tolerance, bool
         return {};}                                         // break
     Vector x1(n,0);                 // Definition for the next iteration
     Vector Deltax(n,0);             // Difference between iterations
-    double acout[3*n+2]{};
-    double epsilon = 2*tolerance;   // |x^n+1-x^n|<\epsilon
-    int k{};    // initialize iteration count
-    while (epsilon > tolerance){
+    double epsilon = 2*tol;   // |x^n+1-x^n|<\epsilon
+    while (epsilon > tol){
+        k++;    // advance iteration
         x1 = b;
         for (int i =0; i < n; i++){
             for (int j = 0; j < n; j++){
@@ -352,15 +353,8 @@ Vector GaussSeidelSolve(Matrix& A, Vector& b, Vector& x0, double tolerance, bool
             x1[i] = x1[i]/A[i][i];
         }
         Deltax = VecDiff(x1, x0);
-        epsilon = norm(Deltax);
-/*         if (print){
-            acout[0] = double(k);
-            copy(x0.begin(), x0.end(), acout+1);
-            copy(x1.begin(), x1.end(), acout+n+1);
-            copy(Deltax.begin(), Deltax.end(), acout+n+n+1);
-            acout[3*n+1] = epsilon;
-            d_wa_file_csv("GaussSeidelResult.csv", acout, 3*n+2);} */
-        k++;    // advance iteration
+        epsilon = norm(Deltax,p,inf);
+        x0 = x1;
     }
     return x1;   // Return the solution
 }

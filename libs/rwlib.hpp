@@ -122,3 +122,20 @@ void cwrite_row_double(string wname, Vector& wdata, int pres = 16, bool csv = 0)
     }
     wfile.close();  //close the file
 }
+
+// writes a double array as a line without overwriting the rest of the file
+void cwrite_row_int(string wname, IVector& wdata, bool csv = 0){
+    ofstream wfile;
+    wfile.open(wname, ios_base::app);
+    int n=wdata.size();
+    if (not csv){
+        for (int i = 0; i < n; i++){    // for every line
+            wfile << wdata[i] << "  " ;
+        } wfile << endl;
+    }else if (csv){
+        for (int i = 0; i < n; i++){    // for every line
+            wfile << wdata[i] << ", " ;
+        } wfile << endl;
+    }
+    wfile.close();  //close the file
+}
