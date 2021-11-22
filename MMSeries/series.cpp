@@ -1,13 +1,5 @@
-#include <iostream>
-#include <math.h>
-#include <fstream>
-#include <string>
-#include <functional>
-using namespace std::placeholders;
+#include "libs/header.hpp"
 #include "libs/gnuplot.hpp"
-using namespace std;
-#include "libs/funlib.hpp"
-#include "libs/rwlib.hpp"
 
 double a0 = 1; double a1 = 1;
 
@@ -35,10 +27,12 @@ int main(){
   for (int i = 2; i < N; i++) {
     as[i+1] = a(i+1,as[i],as[i-2]);
   }
-  d_w_file_ln("terms.csv", as, N+1,50);
   function<double (double) > serie = bind(series,_1,as,N,1);
-  double x [1001]{}; double y[1001]{};
+  Vector x(1001,0); Vector y(1001,0);
   eval(serie, -8, 4, 1000, x,y);
-  d_w_file_2cols("func.dat", x, y,1001);
+  Matrix out(2,Vector(1001,0));
+  out[0] = x; out[1] = y;
+  out = transpose(out);
+  write_mat_double("func.dat", out);
   GnuplotPipe gp; gp.sendLine("plot 'func.dat'");
 }
