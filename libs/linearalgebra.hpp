@@ -358,3 +358,88 @@ Vector GaussSeidelSolve(Matrix& A, Vector& b, Vector x0, double tol, int& k,int 
     }
     return x1;   // Return the solution
 }
+
+//-----------------------------------------------------------------------------------------
+// Espectral theory
+//-----------------------------------------------------------------------------------------
+
+double JacobiAngle(double& aii, double& ajj, double& aij){
+    if (aii != ajj){
+        return atan(2*aij/(aii-ajj))/2;
+    }else if(aii == ajj){
+        return M_PI/4;
+    }
+    return {};
+}
+
+/* Matrix Rotation(double& theta, int i, int j, int n){
+    Matrix R = MIdentity(n);
+    R[i][i] =  cos(theta);
+    R[j][j] =  cos(theta);
+    R[i][j] = -sin(theta);
+    R[j][i] =  sin(theta);
+    return R;
+} */
+
+Vector PartMatVec(Matrix& A, IMatrix& index, bool absv = 0){
+    int n = A.size();
+    int p = (n*n-n)/2;
+    Vector v(p,0);
+    IMatrix Index(p,IVector(2,0));
+    index = Index; int k{};
+    if (absv){
+        for (int i = 0; i < n; i++){
+            for (int j = i+1; j < n; j++){
+                v[k] = abs(A[i][j]);
+                index[k][0] = i; index[k][1] = j;
+                k++;
+            }
+        }
+    } else if (!absv){
+        for (int i = 0; i < n; i++){
+            for (int j = i+1; j < n; j++){
+                v[k] = A[i][j];
+                index[k][0] = i; index[k][1] = j;
+                k++;
+            }
+        }
+    }
+    return v;
+}
+
+IVector MaxMat(Matrix& A, double& max){
+    IMatrix Index;
+    Vector v = PartMatVec(A, Index,1);
+    max = *max_element(v.begin(), v.end());
+    int i = max_element(v.begin(), v.end())-v.begin();
+    return Index[i];
+}
+
+Matrix JacobiDiag(Matrix A, Matrix& U, int& k, double tol){
+    k = 0; double max;
+    int n = A.size(); int i; int j;
+    U = MIdentity(n); Matrix P = U;
+    IVector MaxIn(2,0); double theta;
+    Matrix B = A; MaxIn = MaxMat(A, max);
+    while(max > tol){
+        i = MaxIn[0]; j = MaxIn[1]; k++;
+        theta = JacobiAngle(A[i][i],A[j][j],A[i][j]);
+        for (int l = 0; l<n; l++){
+            P[l][i] =  U[l][i]*cos(theta)+U[l][j]*sin(theta);
+            P[l][j] = -U[l][i]*sin(theta)+U[l][j]*cos(theta);
+        }
+        U = P;
+        for (int l = 0; l<n; l++){
+            if (l!=i && l!= j){
+                B[i][l] =  A[i][l]*cos(theta)+A[j][l]*sin(theta); B[l][i] = B[i][l];
+                B[j][l] = -A[i][l]*sin(theta)+A[j][l]*cos(theta); B[l][j] = B[j][l];
+            }
+        }
+        B[i][i]=A[i][i]*pow(cos(theta),2)+A[j][j]*pow(sin(theta),2)+2*A[i][j]*sin(theta)*cos(theta);
+        B[j][j]=A[i][i]*pow(sin(theta),2)+A[j][j]*pow(cos(theta),2)-2*A[i][j]*sin(theta)*cos(theta);
+        B[j][i] = 0; B[i][j] = 0;
+        MaxIn = MaxMat(B, max);
+        A = B;
+    }
+    return B;
+}

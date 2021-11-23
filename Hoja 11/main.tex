@@ -1,0 +1,101 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lachaise Assignment
+% LaTeX Template
+% Version 1.0 (26/6/2018)
+%
+% This template originates from:
+% http://www.LaTeXTemplates.com
+%
+% Authors:
+% Marion Lachaise & François Févotte
+% Vel (vel@LaTeXTemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{article}
+
+\input{structure.tex} % Include the file specifying the document structure and custom commands
+
+%----------------------------------------------------------------------------------------
+%	ASSIGNMENT INFORMATION
+%----------------------------------------------------------------------------------------
+
+\title{Práctica 11, Diagonalización} % Title of the assignment
+
+\author{Abel Rosado\\ \texttt{abel.rosado@estudiante.uam.es}} % Author name and email address
+
+\date{UAM --- \today} % University, school and/or department name(s) and a date
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Print the title
+
+
+Tendremos un bloque de viviendas formado por 4 plantas, las cuales sufren un impulso a causa de un huracán, un terremoto u otra catástrofe natural de índole similar.
+
+Consideramos que las paredes son muelles sin masa que conectan los suelos, de tal forma que las ecuaciónes del movimiento para las posiciones horizontales de los suelos son
+\[m_i \ddot{x}_i+ k_i (x_i-x_{i-1})-k_{i+1}(x_{i+1}-x_i) = 0\]
+Si consideramos que que todas las masas y las constantes de los muelles son iguales tenemos el siguiente sistema de ecuaciones diferenciales lineal
+\[\left\{\begin{matrix}m \ddot{x}_1 +2 k x_1 -k x_2 = 0 \phantom{---} \\
+m \ddot{x}_2 +2 k x_2 -k x_1 - k x_3 = 0 \\
+m \ddot{x}_3 +2 k x_3 -k x_2 - k x_4 = 0 \\
+m \ddot{x}_4 +k (x_4-x_3) = 0 \phantom{---} \end{matrix}\right.\]
+Que podemos expresar mediante la siguiente ecuación vectorial, donde $\mathbf{I}_4$ es la identidad
+\[\mathbf{M} \ddot{\mathbf{x}} + \mathbf{K} \mathbf{x} = 0\]
+\[\mathbf{x} = \left(\begin{matrix}
+	x_1 \\ x_2 \\ x_3 \\ x_4
+\end{matrix}\right)\ \ \ \ \ \ \ddot{\mathbf{x}} = \left(\begin{matrix}
+	\ddot{x}_1 \\ \ddot{x}_2 \\ \ddot{x}_3 \\ \ddot{x}_4
+\end{matrix}\right)\ \ \ \ \ \ \mathbf{M} = m \mathbf{I}_4 \ \ \ \ \ \ \mathbf{K} = k\left(\begin{matrix}
+	2 && -1 &&  0 &&  0 \\
+   -1 &&  2 && -1 &&  0 \\
+	0 && -1 &&  2 && -1 \\
+	0 &&  0 && -1 && 1
+\end{matrix}\right)\]
+Que podemos reescribir como
+\[\ddot{\mathbf{x}} + \mathbf{C} \mathbf{x} = 0 \ \ \ \ \  \mathbf{C} =\frac{1}{m}\mathbf{K}\]
+De tal forma que, si $m=4000$ kg y $k = 5000$ N/m, entonces
+\[\mathbf{C} = \left(\begin{matrix}
+	2.5 && -1.25 &&  0 &&  0 \\
+   -1.25 &&  2.5 && -1.25 &&  0 \\
+	0 && -1.25 &&  2.5 && -1.25 \\
+	0 &&  0 && -1.25 && 1.25
+\end{matrix}\right)\]
+Si ahora diagonalizamos $\mathbf{C}$, usando el método iterativo de Jacobi, obtenemos un resutado $\mathbf{C} = \mathbf{U}\mathbf{D}\mathbf{U}^T$, al revés, $\mathbf{U}^T \mathbf{C}\mathbf{U} = \mathbf{D}$ , donde $\mathbf{U}^T = \mathbf{U}^{-1}$, tal que
+\[\mathbf{D} \approx \left(\begin{matrix}
+	1.25 && 0 &&  0 &&  0 \\
+    0 &&  4.415 && 0&&  0 \\
+	0 && 0 &&  2.934 && 0 \\
+	0 &&  0 && 0&& 0.151
+\end{matrix}\right) \ \ \ \ \ \mathbf{U} \approx \left(\begin{matrix}
+	\sqrt{3}/3 && -0.428 &&  -0.657 &&  0.228 \\
+    \sqrt{3}/3 &&  0.657 &&  0.228  &&  0.428 \\
+	0 && -\sqrt{3}/3 &&  \sqrt{3}/3 && \sqrt{3}/3 \\
+	-\sqrt{3}/3 &&  0.228 && -0.428&& 0.657
+\end{matrix}\right)\]
+Tenemos que $\mathbf{U}$ es la matriz de cambio de base desde la base de autovectores hasta la base original del problema, tal que $\mathbf{U} \mathbf{x}' = \mathbf{x}$ y $\mathbf{U} \ddot{\mathbf{x'}} = \ddot{\mathbf{x}}'$, y al revés, $ \mathbf{x}' =\mathbf{U}^T \mathbf{x}$ y $\ddot{\mathbf{x'}} = \mathbf{U}^T \ddot{\mathbf{x}}'$, entonces multiplicando a la izquierda por $\mathbf{U}^T$ en la ecuación diferencial anterior y sustituyendo $\mathbf{x}$ llegamos a 
+\[\mathbf{U}^T\ddot{\mathbf{x}} + \mathbf{U}^T\mathbf{C} \mathbf{U}\mathbf{x}' = 0 \implies \ddot{\mathbf{x}}' + \mathbf{D} \mathbf{x}'=0\]
+Entonces ahora tenemos un sistema de ecuaciones diferenciales \textbf{no} acopladas, de la forma siguiente, donde $\lambda_i$ es el autovalor asociado
+\[\ddot{x}'_i + \lambda_i x'_i =0\]
+Estas escuaciones diferenciales ordinarias tienen una solución analítica de la forma
+\[x'_i(t) = a_i \cos\omega_i t + b_i \sin\omega_i t \ \ \ \ \ \ \omega_i^2 = \lambda_i\]
+Que podemos expresar de nuevo como un vector, y multiplicar por $\mathbf{U}$ para obtener de nuevo $\mathbf{x}$, tal que
+\[\mathbf{x}'(t) = \left(\begin{matrix}
+	a_1 \cos\omega_1 t + b_1 \sin\omega_1 t \\
+	a_2 \cos\omega_2 t + b_2 \sin\omega_2 t \\
+	a_3 \cos\omega_3 t + b_3 \sin\omega_3 t \\
+	a_4 \cos\omega_4 t + b_4 \sin\omega_4 t
+\end{matrix}\right) \ \ \ \ \ \mathbf{x} = \mathbf{U} \mathbf{x}' \ \ \ \ \  [a_i] = \mathbf{U}^T \mathbf{x}(0) \ \ \ \ \  [\omega_i b_i] = \mathbf{U}^T \dot{\mathbf{x}}(0)\]
+De esta forma tenemos un sistema de osciladores acoplados, y como todos los autovalores son positivos, la resolución de la ecuación diferencial nos devuelve soluciones oscilantes estables con las raices de los autovalores como frecuencias. Si uno o más de los autovalores hubiera sido negativo, una de las soluciones hubiera sido una exponencial y la evolución temporal no sería estable en la mayor parte de las condiciones iniciales.
+
+Las frecuencias, en Hz, son $f_1 = 0.178$, $f_2 = 0.334$, $f_3 = 0.273$ y $f_4 = 0.0618$, oscilaciones perceptibles a simple vista para tiempos relativamente cortos del orden de segundos.
+\end{document}

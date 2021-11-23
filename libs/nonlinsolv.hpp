@@ -25,7 +25,7 @@ double bisection(double (*f)(double), double x1, double x2, double tol){
 }
 
 double secant(double (*f)(double), double x1, double x2, double tol){
-    double x3; double err = 2*tol; //int i{};
+    double x3; double err = 2*tol;// int i{};
     while (err > tol){
         x3 = x2-f(x2)*((x2-x1)/(f(x2)-f(x1)));
         x1 = x2; x2 = x3; err = abs(x1-x2);

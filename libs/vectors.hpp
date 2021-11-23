@@ -32,6 +32,28 @@ void coutmat(Matrix& M, int pres = 16){      // Input is Matrix M passed with & 
     } cout << endl;
 }
 
+void Lcoutmat(LMatrix& M, int pres = 32){      // Input is Matrix M passed with & as a pointer
+    cout.precision(pres);
+    cout << endl;
+    int rows=M.size(); int cols=M[0].size(); // size of M
+    for (int i = 0; i < rows; i++){          // for every row
+        for (int j = 0; j < cols; j++){      // for every column
+            cout << M[i][j] << " ";          // Show Mij index of M followed by a space
+        }cout << endl;                       // next line
+    } cout << endl;
+}
+
+// displays a matrix in console
+void Icoutmat(IMatrix& M){      // Input is Matrix M passed with & as a pointer
+    cout << endl;
+    int rows=M.size(); int cols=M[0].size(); // size of M
+    for (int i = 0; i < rows; i++){          // for every row
+        for (int j = 0; j < cols; j++){      // for every column
+            cout << M[i][j] << " ";          // Show Mij index of M followed by a space
+        }cout << endl;                       // next line
+    } cout << endl;
+}
+
 // displays a vector in console
 void coutvec(Vector& v, int pres = 16){   // Input is Matrix M passed with & as a pointer
     int rows=v.size();                    // Size of the vector.
@@ -109,6 +131,17 @@ Vector ScalMult(Vector& A, double lambda){
     Vector B(n,0);                          // Define the solution
     for (int i = 0; i < n; i++){            // For every component
         B[i] = lambda*A[i];
+    }
+    return B;
+}
+// Multiplies a vector A by a scalar lambda
+Matrix ScalMultMat(Matrix& A, double lambda){
+    int rows = A.size(); int cols = A[0].size();
+    Matrix B(rows,Vector(cols));            // Define the solution
+    for (int i = 0; i < rows; i++){            // For every component
+        for (int j = 0; j < cols; j++){
+            B[i][j] = lambda*A[i][j];
+        }
     }
     return B;
 }
