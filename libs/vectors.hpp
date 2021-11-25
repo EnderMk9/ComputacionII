@@ -218,3 +218,11 @@ double DiagonalProd(Matrix& U){
     }
     return D;
 }
+
+Vector absVec(Vector& v){
+    Vector a = v; int n=a.size();
+    for (int i = 0; i < n; i++){
+        a[i] = abs(a[i]);
+    }
+    return a;
+}

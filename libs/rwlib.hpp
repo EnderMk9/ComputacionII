@@ -91,15 +91,15 @@ void write_mat_double(string wname, Matrix& wdata, int pres = 16, bool csv = 0){
     int cols=wdata[0].size();
     if (not csv){
         for (int i = 0; i < rows; i++){
-            for (int j = 0; j < cols; j++){
+            for (int j = 0; j < cols-1; j++){
                 wfile << wdata[i][j] << "  ";
-            } wfile << endl;
+            } wfile << wdata[i][cols-1] << endl;
         }
     }else if (csv){
         for (int i = 0; i < rows; i++){
-            for (int j = 0; j < cols; j++){
+            for (int j = 0; j < cols-1; j++){
                 wfile << wdata[i][j] << ", ";
-            } wfile << endl;
+            } wfile << wdata[i][cols-1] << endl;
         }
     }
     wfile.close();

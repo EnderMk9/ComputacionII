@@ -41,6 +41,22 @@ double derivativeCD(double (*f)(double), double x0, double h){
     return (f(x0+h)-f(x0-h))/(2*h); // approximate value of the derivative using second order formula
 }
 
+// MUST BE EQUISPACED
+Vector derivativeCDArr(Vector& x, Vector& y){
+    int xs = x.size(); int ys = y.size();
+    if (xs != ys){
+        cout << "ERROR SIZES NOT COMPATIBLE" << endl;
+        return{};
+    }
+    Vector dy(xs,0);
+    dy[0] = (4*y[1]-3*y[0]-y[2])/(2*(x[1]-x[0]));
+    for (int i = 1; i < xs-1; i++){
+        dy[i] = (y[i+1]-y[i-1])/(2*(x[i+1]-x[i]));
+    }
+    dy[xs-1] = (y[xs-1]-y[xs-2])/(x[xs-1]-x[xs-2]);
+    return dy;
+}
+
 // DERIVADA SEGUNDA
 // Usamos una fórmula de diferencias centradas f(x_0+h)+f(x_0-h) +2f(x_0) / h² que tiene un error
 // del orden O(h²), que puede demostrarse expandiendo en taylor f(x_0+h) y f(x_0-h) para
@@ -63,6 +79,22 @@ double derivative2LoopCD(double (*f)(double), double x0, double h0, double tol){
 // estimate the error and optimize h and this function requieres less iterations
 double derivative2CD(double (*f)(double), double x0, double h){
     return (f(x0+h)+f(x0-h)-2*f(x0))/(h*h);
+}
+
+// MUST BE EQUISPACED
+Vector derivative2CDArr(Vector& x, Vector& y){
+    int xs = x.size(); int ys = y.size();
+    if (xs != ys){
+        cout << "ERROR SIZES NOT COMPATIBLE" << endl;
+        return{};
+    }
+    Vector ddy(xs,0);
+    ddy[0] = (y[2]-2*y[1]+y[0])/((x[1]-x[0])*(x[1]-x[0]));
+    for (int i = 1; i < xs-1; i++){
+        ddy[i] = (y[i+1]+y[i-1]-2*y[i])/((x[i+1]-x[i])*(x[i+1]-x[i]));
+    }
+    ddy[xs-1] = (y[xs-1]-2*y[xs-2]+y[xs-3])/((x[xs-1]-x[xs-2])*(x[xs-1]-x[xs-2]));
+    return ddy;
 }
 
 // HIGHER DIMENSIONS
