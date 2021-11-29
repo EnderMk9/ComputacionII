@@ -23,7 +23,7 @@
 // Tal que entonces h* = \3th-root(3e|f(x_0)| / |f⁽³⁾(x_0)|)
 
 // Calculates derivative using a loop to have an error less than the tolerance
-double derivativeLoopCD(double (*f)(double), double x0, double h0, double tol){
+double derivativeLoopCD(std::function<double(double)> f, double x0, double h0, double tol){
     double h   = h0;            // initial variation of x
     double err = 2*tol;         // initual value of error for the while to work
     double dp{}; double d;      // each term in the succesion
@@ -37,7 +37,7 @@ double derivativeLoopCD(double (*f)(double), double x0, double h0, double tol){
 
 // best used when knowing the order of magnitude of f⁽³⁾(x_0), because then you can
 // estimate the error and optimize h and this function requieres less iterations
-double derivativeCD(double (*f)(double), double x0, double h){
+double derivativeCD(std::function<double(double)> f, double x0, double h){
     return (f(x0+h)-f(x0-h))/(2*h); // approximate value of the derivative using second order formula
 }
 
@@ -63,7 +63,7 @@ Vector derivativeCDArr(Vector& x, Vector& y){
 // h = 0, sumar ambas expresiones y despejar f''(x_0)
 
 // Calculates derivative using a loop to have an error less than the tolerance
-double derivative2LoopCD(double (*f)(double), double x0, double h0, double tol){
+double derivative2LoopCD(std::function<double(double)> f, double x0, double h0, double tol){
     double h   = h0;            // initial variation of x
     double err = 2*tol;         // initual value of error for the while to work
     double dp{}; double d;      // each term in the succesion
@@ -77,7 +77,7 @@ double derivative2LoopCD(double (*f)(double), double x0, double h0, double tol){
 
 // best used when knowing the order of magnitude of f⁽⁴⁾(x_0), because then you can
 // estimate the error and optimize h and this function requieres less iterations
-double derivative2CD(double (*f)(double), double x0, double h){
+double derivative2CD(std::function<double(double)> f, double x0, double h){
     return (f(x0+h)+f(x0-h)-2*f(x0))/(h*h);
 }
 

@@ -243,8 +243,8 @@ Vector LUSolve(Matrix& A, Vector& b, bool out = 0){
     Matrix U( n,vector<double>(n,0));      // Upper matrix of 0s
     LU(A,L,U);                             // LU decomposition
     if (out){
-        cout << "L = "; coutmat(L);
-        cout << "U = "; coutmat(U);
+        cout << "L = "; coutmat(L,5);
+        cout << "U = "; coutmat(U,5);
     }
     Vector z(n,0); Vector x(n,0);       // Define the vectors to solve
     for(int i = 0; i < n; i++){         // First solve Lz=b

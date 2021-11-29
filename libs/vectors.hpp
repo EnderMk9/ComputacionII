@@ -125,6 +125,18 @@ Matrix transpose(Matrix& M){ // Input is a square Matrix M passed with & as a po
     return T;
 }
 
+// transposes a matrix
+IMatrix Itranspose(IMatrix& M){ // Input is a square Matrix M passed with & as a pointer
+    int rows=M.size(); int cols=M[0].size();  // Size of M
+    IMatrix T( cols,vector<int>(rows,0));   // Initialize the transpose
+    for (int i = 0; i < cols; i++){           // for every row
+        for (int j = 0; j < rows; j++){       // for every column
+            T[i][j] = M[j][i];                // Define the transpose
+        }
+    }
+    return T;
+}
+
 // Multiplies a vector A by a scalar lambda
 Vector ScalMult(Vector& A, double lambda){
     int n = A.size();

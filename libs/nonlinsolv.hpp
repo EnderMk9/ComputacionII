@@ -6,10 +6,10 @@
 // requires calculus.hpp for derivative
 // requires linealgebra.hpp for multivariable functions
 
-double bisection(double (*f)(double), double x1, double x2, double tol){
+double bisection(std::function<double(double)> f, double x1, double x2, double tol, int& i){
     if (f(x1)*f(x2)>0){
         cout << "ERROR POINTS NOT VALID" << endl; return NAN;}
-    double x3; double err = 2*tol; //int i{};
+    double x3; double err = 2*tol; i = 0;
     while (err > tol){
         x3 = (x1+x2)/2;
         if (f(x1)*f(x3) <0){
@@ -18,32 +18,33 @@ double bisection(double (*f)(double), double x1, double x2, double tol){
             x1 = x3;
         }
         err = abs(x2-x1);
-        //i++;
+        i++;
     }
     //cout << "bisection iterations : " << i << endl;
     return x3;
 }
 
-double secant(double (*f)(double), double x1, double x2, double tol){
-    double x3; double err = 2*tol;// int i{};
+double secant(std::function<double(double)> f, double x1, double x2, double tol, int& i){
+    double x3; double err = 2*tol; i = 0;
     while (err > tol){
         x3 = x2-f(x2)*((x2-x1)/(f(x2)-f(x1)));
+        cout << x3 << endl;
         x1 = x2; x2 = x3; err = abs(x1-x2);
-        //i++;
+        i++;
     }
     //cout << "secant iterations : " << i << endl;
     return x3;
 }
 
-double NewtonNum(double (*f)(double), double x0, double tol, double h, bool loop, int& i){
+double NewtonNum(std::function<double(double)> f, double x0, double tol, double h, bool loop, int& i){
     double xp = x0; double x; double d; double y;
-    double err = 2*tol; //int i{};
+    double err = 2*tol; i = 0;
     if (loop){
         while (err > tol){
             y = f(xp); d = derivativeLoopCD(f, xp, h, tol);
             x = xp - y/d;
             err = abs(xp-x); xp = x;
-            //i++;
+            i++;
         }
         //cout << "Newton devloop iterations : " << i << endl;
         return x;
@@ -60,7 +61,7 @@ double NewtonNum(double (*f)(double), double x0, double tol, double h, bool loop
     return 0;
 }
 
-double NewtonAnal(double (*f)(double),double (*fp)(double), double x0, double tol, int& i){
+double NewtonAnal(std::function<double(double)> f,std::function<double(double)> fp, double x0, double tol, int& i){
     double xp = x0; double x; double d; double y;
     double err = 2*tol;
     while (err > tol){

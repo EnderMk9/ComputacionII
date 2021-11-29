@@ -68,7 +68,7 @@ Matrix read_matrix_double(string rname,int m){
 // Write
 //------------------------------------------
 
-void write_col_double(string wname, Vector& wdata, int pres = 16, bool csv = 0){
+void write_col_double(string wname, Vector& wdata, bool csv = 0, int pres = 16){
     ofstream wfile (wname);  // set read file
     wfile.precision(pres);
     int n=wdata.size();
@@ -84,7 +84,7 @@ void write_col_double(string wname, Vector& wdata, int pres = 16, bool csv = 0){
     wfile.close();
 }
 
-void write_mat_double(string wname, Matrix& wdata, int pres = 16, bool csv = 0){
+void write_mat_double(string wname, Matrix& wdata, bool csv = 0, int pres = 16){
     ofstream wfile (wname);  // set read file
     wfile.precision(pres);
     int rows=wdata.size();
@@ -105,8 +105,28 @@ void write_mat_double(string wname, Matrix& wdata, int pres = 16, bool csv = 0){
     wfile.close();
 }
 
+void write_mat_int(string wname, IMatrix& wdata, bool csv = 0){
+    ofstream wfile (wname);  // set read file
+    int rows=wdata.size();
+    int cols=wdata[0].size();
+    if (not csv){
+        for (int i = 0; i < rows; i++){
+            for (int j = 0; j < cols-1; j++){
+                wfile << wdata[i][j] << "  ";
+            } wfile << wdata[i][cols-1] << endl;
+        }
+    }else if (csv){
+        for (int i = 0; i < rows; i++){
+            for (int j = 0; j < cols-1; j++){
+                wfile << wdata[i][j] << ", ";
+            } wfile << wdata[i][cols-1] << endl;
+        }
+    }
+    wfile.close();
+}
+
 // writes a double array as a line without overwriting the rest of the file
-void cwrite_row_double(string wname, Vector& wdata, int pres = 16, bool csv = 0){
+void cwrite_row_double(string wname, Vector& wdata, bool csv = 0, int pres = 16){
     ofstream wfile;
     wfile.open(wname, ios_base::app);
     wfile.precision(pres);
