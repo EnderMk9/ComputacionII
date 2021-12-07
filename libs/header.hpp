@@ -22,3 +22,4 @@ using namespace std::placeholders;
 #include "nonlinsolv.hpp"       // Non-linear equations solver library
 // most of these libraries are interdependent
 // included libraries inside are <vector>, <string> and <fstream>
+#include "statistics.hpp"

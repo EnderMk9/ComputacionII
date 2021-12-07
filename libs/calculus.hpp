@@ -178,3 +178,77 @@ Matrix JacobianNum(int n,Vector& x0,std::function<Vector(Vector&)> f,double h,do
     J = transposeSqr(J);       // Transpose the matrix because rows must vary the coordenate
     return J;
 }
+
+//-------------------------------------------------------------------------------------
+// Integrals
+//-------------------------------------------------------------------------------------
+
+double DefIntTrap(std::function<double(double)> f, double a, double b, int n){
+    double I; double h = (b-a)/n;
+    I = (h/2)*(f(a)+f(b));
+    for (int i = 1; i < n; i++){
+        I += h*f(a+i*h);
+    }
+    return I;
+}
+
+// n even
+double DefIntSimp13(std::function<double(double)> f, double a, double b, int n){
+    double I; double h = (b-a)/n;
+    I = (h/3)*(f(a)+f(b));
+    for (int i = 1; i < n; i = i+2){
+        I += (4./3)*h*f(a+i*h);
+    }
+    for (int i = 2; i < n-1; i = i+2){
+        I += (2./3)*h*f(a+i*h);
+    }
+    return I;
+}
+
+// n multiple of 3
+double DefIntSimp38(std::function<double(double)> f, double a, double b, int n){
+    double I; double h = (b-a)/n;
+    I = (3*h/8)*(f(a)+f(b));
+    for (int i = 1; i < n; i = i+3){
+        I += (9./8)*h*f(a+i*h);
+    }
+    for (int i = 2; i < n; i = i+3){
+        I += (9./8)*h*f(a+i*h);
+    }
+    for (int i = 3; i < n; i = i+3){
+        I += (6./8)*h*f(a+i*h);
+    }
+    return I;
+}
+
+//
+double DefIntSimp(std::function<double(double)> f, double a, double b, int n){
+    if (n % 2 == 0){
+        return DefIntSimp13(f,a,b,n);
+    } else if (n % 2 != 0){
+        double I; double h = (b-a)/n;
+        I = DefIntSimp13(f,a,b-3*h,n-3);
+        I+= (3*h/8.)*(f(b-3*h)+f(b)+3*f((3*b-6*h)/3.)+3*f((3*b-3*h)/3.));
+        return I;
+    }
+    return {};
+}
+
+Matrix Lw = {{2,0,0,0,0},
+            {1,1,0,0,0},
+            {8./9,5./9,5./9,0,0},
+            {(18+sqrt(30))/(36.),(18+sqrt(30))/(36.),(18-sqrt(30))/(36.),(18-sqrt(30))/(36.),0},
+            {128./225,(322+13*sqrt(70))/(900.),(322+13*sqrt(70))/(900.),(322-13*sqrt(70))/(900.),(322-13*sqrt(70))/(900.)}};
+Matrix Lxi = {{0,0,0,0,0},
+             {1./sqrt(3),-1./sqrt(3),0,0,0},
+             {0,sqrt(3./5),-sqrt(3./5),0,0},
+             {sqrt(3./7 - (2./7)*sqrt(6./5)),-sqrt(3./7 - (2./7)*sqrt(6./5)),sqrt(3./7 + (2./7)*sqrt(6./5)),-sqrt(3./7 + (2./7)*sqrt(6./5)),0},
+             {0,(1./3)*sqrt(5-2*sqrt(10./7)),-(1./3)*sqrt(5-2*sqrt(10./7)),(1./3)*sqrt(5+2*sqrt(10./7)),-(1./3)*sqrt(5+2*sqrt(10./7))}};
+
+double DefIntGaussLegendre(std::function<double(double)> f, double a, double b, int n = 4){
+    double I{}; double p = (b-a)/2; double q = (b+a)/2;
+    for (int i = 0; i < n; i++){
+        I += p*Lw[n-1][i]*f(p*Lxi[n-1][i]+q);
+    }
+    return I;
+}
