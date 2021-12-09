@@ -1,0 +1,71 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lachaise Assignment
+% LaTeX Template
+% Version 1.0 (26/6/2018)
+%
+% This template originates from:
+% http://www.LaTeXTemplates.com
+%
+% Authors:
+% Marion Lachaise & François Févotte
+% Vel (vel@LaTeXTemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+\documentclass{article}
+
+\input{structure.tex} % Include the file specifying the document structure and custom commands
+\usepackage{lscape}
+%----------------------------------------------------------------------------------------
+%	ASSIGNMENT INFORMATION
+%----------------------------------------------------------------------------------------
+
+\title{Práctica 14} % Title of the assignment
+
+\author{Abel Rosado Peinado - 5265\\ \texttt{abel.rosado@estudiante.uam.es}} % Author name and email address
+
+\date{UAM --- \today} % University, school and/or department name(s) and a date
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Print the title
+\noindent Tenemos el siguiente sistema de ecuaciones diferenciales ordinarias
+\[\left\{\begin{matrix}
+	\dot{v} = g-\gamma v^2 = f(t,x,v) \\ \dot{x} = -v = g(t,x,v)
+\end{matrix}\right.\]
+Como la primera ecuación no depende de x, podemos resolverla independientemente a la segunda, usando el método de Euler y el de Runge-Kutta, con el que resolveremos además el sistema de ecuaciones completo.
+
+Queremos que $\lim_{t\rightarrow \infty}v = 57$ ms$^{-1}$, y esto ocurre cuando $\gamma = g/v_{\mbox{\small lím}}^2$.
+
+Hemos realizado la integración de la EDO con un espaciado temporal de $h=25/9999 \approx 2.5 \cdot 10^{-4}$, y las soluciones, de x y de v se encuentran en las figuras de abajo hechas con Runge-Kutta para el sistema de arriba, con $v(0) = 0$ ms$^{-1}$ y $x(0) = 100$ m.
+
+\begin{minipage}{8cm}
+	\centering
+	\includegraphics[width=7.5cm]{untitled3.png}
+  \end{minipage}%
+  \begin{minipage}{8cm}
+	\centering
+	\includegraphics[width=7.5cm]{untitled2.png}
+  \end{minipage}
+
+La diferencia de las soluciones proporcionadas por ambos métodos se pueden observar en las dos figuras de abajo, donde se observa el valor absoluto de la diferencia de ambas soluciones en escala lineal y en escala logarítmica.
+
+  \begin{minipage}{8cm}
+	\centering
+	\includegraphics[width=7.5cm]{untitled.png}
+  \end{minipage}%
+  \begin{minipage}{8cm}
+	\centering
+	\includegraphics[width=7.5cm]{untitled1.png}
+  \end{minipage}
+
+Podemos comprobar que el error de Euler es mucho mayor que el de Runge-Kutta, puesto que que se va acumulando mucho más. Se observa cuando la velocidad esta variando, el error se va acumulando, pero cuando comenzamos a llegar al límite, ambos métodos llegan a un resultado parecido, aunque el de Euler llega a una velocidad límite ligeramente distinta, del orden de $10^{-5}$.
+\end{document}

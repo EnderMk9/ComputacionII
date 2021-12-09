@@ -252,3 +252,60 @@ double DefIntGaussLegendre(std::function<double(double)> f, double a, double b, 
     }
     return I;
 }
+
+//-------------------------------------------------------------------------------------
+// EDO's
+//-------------------------------------------------------------------------------------
+
+Matrix EulerPO(std::function<double(double,double)> yp, double x0, double xf,double y0, int n){
+    Vector x = linspace(x0,xf,n);
+    double h = (xf-x0)/(n-1);
+    Vector y = VecFull(0,n); y[0] = y0;
+    for (int i = 1; i < n; i++){
+        y[i] = y[i-1]+h*yp(x[i-1],y[i-1]);
+    }
+    Matrix xy = MatFull(0,2,n);
+    xy[0] = x; xy[1] = y;
+    return xy;
+}
+
+Matrix RungeKutta4PO(std::function<double(double,double)> yp, double x0, double xf,double y0, int n){
+    Vector x = linspace(x0,xf,n);
+    double h = (xf-x0)/(n-1);
+    Vector y = VecFull(0,n); y[0] = y0;
+    double k1; double k2; double k3; double k4;
+    for (int i = 1; i < n; i++){
+        k1 = yp(x[i-1],y[i-1]);
+        k2 = yp(x[i-1]+h/2.,y[i-1]+(h*k1)/2.);
+        k3 = yp(x[i-1]+h/2.,y[i-1]+(h*k2)/2.);
+        k4 = yp(x[i-1]+h,y[i-1]+h*k3);
+        y[i] = y[i-1]+h*(k1+2*k2+2*k3+k4)/6.;
+    }
+    Matrix xy = MatFull(0,2,n);
+    xy[0] = x; xy[1] = y;
+    return xy;
+}
+
+Matrix RungeKutta4SO(std::function<double(double,double,double)> f,std::function<double(double,double,double)> g, double x0, double xf, double y0, double z0, int n){
+    Vector x = linspace(x0,xf,n);
+    double h = (xf-x0)/(n-1);
+    Vector y = VecFull(0,n); y[0] = y0;
+    Vector z = VecFull(0,n); z[0] = z0;
+    double k1; double k2; double k3; double k4;
+    double l1; double l2; double l3; double l4;
+    for (int i = 1; i < n; i++){
+        k1 = f(x[i-1],y[i-1],z[i-1]);
+        l1 = g(x[i-1],y[i-1],z[i-1]);
+        k2 = f(x[i-1]+h/2.,y[i-1]+(h*k1)/2.,z[i-1]+(h*l1)/2.);
+        l2 = g(x[i-1]+h/2.,y[i-1]+(h*k1)/2.,z[i-1]+(h*l1)/2.);
+        k3 = f(x[i-1]+h/2.,y[i-1]+(h*k2)/2.,z[i-1]+(h*l2)/2.);
+        l3 = g(x[i-1]+h/2.,y[i-1]+(h*k2)/2.,z[i-1]+(h*l2)/2.);
+        k4 = f(x[i-1]+h,y[i-1]+h*k3, z[i-1+h*l3]);
+        l4 = g(x[i-1]+h,y[i-1]+h*k3, z[i-1+h*l3]);
+        y[i] = y[i-1]+h*(k1+2*k2+2*k3+k4)/6.;
+        z[i] = z[i-1]+h*(l1+2*l2+2*l3+l4)/6.;
+    }
+    Matrix xyz = MatFull(0,3,n);
+    xyz[0] = x; xyz[1] = y; xyz[2] = z;
+    return xyz;
+}
