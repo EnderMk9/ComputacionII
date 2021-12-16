@@ -257,7 +257,7 @@ double DefIntGaussLegendre(std::function<double(double)> f, double a, double b, 
 // EDO's
 //-------------------------------------------------------------------------------------
 
-Matrix EulerPO(std::function<double(double,double)> yp, double x0, double xf,double y0, int n){
+Matrix EulerFO(std::function<double(double,double)> yp, double x0, double xf,double y0, int n){
     Vector x = linspace(x0,xf,n);
     double h = (xf-x0)/(n-1);
     Vector y = VecFull(0,n); y[0] = y0;
@@ -269,7 +269,7 @@ Matrix EulerPO(std::function<double(double,double)> yp, double x0, double xf,dou
     return xy;
 }
 
-Matrix RungeKutta4PO(std::function<double(double,double)> yp, double x0, double xf,double y0, int n){
+Matrix RungeKutta4FO(std::function<double(double,double)> yp, double x0, double xf,double y0, int n){
     Vector x = linspace(x0,xf,n);
     double h = (xf-x0)/(n-1);
     Vector y = VecFull(0,n); y[0] = y0;
@@ -300,12 +300,85 @@ Matrix RungeKutta4SO(std::function<double(double,double,double)> f,std::function
         l2 = g(x[i-1]+h/2.,y[i-1]+(h*k1)/2.,z[i-1]+(h*l1)/2.);
         k3 = f(x[i-1]+h/2.,y[i-1]+(h*k2)/2.,z[i-1]+(h*l2)/2.);
         l3 = g(x[i-1]+h/2.,y[i-1]+(h*k2)/2.,z[i-1]+(h*l2)/2.);
-        k4 = f(x[i-1]+h,y[i-1]+h*k3, z[i-1+h*l3]);
-        l4 = g(x[i-1]+h,y[i-1]+h*k3, z[i-1+h*l3]);
+        k4 = f(x[i-1]+h,y[i-1]+h*k3, z[i-1]+h*l3);
+        l4 = g(x[i-1]+h,y[i-1]+h*k3, z[i-1]+h*l3);
         y[i] = y[i-1]+h*(k1+2*k2+2*k3+k4)/6.;
         z[i] = z[i-1]+h*(l1+2*l2+2*l3+l4)/6.;
     }
     Matrix xyz = MatFull(0,3,n);
     xyz[0] = x; xyz[1] = y; xyz[2] = z;
     return xyz;
+}
+
+Matrix RungeKutta4nO(std::function<Vector(double,Vector&)> F, double t0, double tf, Vector x0, int n){
+    Vector t = linspace(t0,tf,n);
+    double h = (tf-t0)/(n-1); int m = x0.size(); double prevt; Vector prevx;
+    Matrix x = MatFull(0,n,m); x[0] = x0;
+    Matrix k = MatFull(0,4,m); Vector sum = x0; Vector prod = x0;
+    for (int i = 1; i < n; i++){
+        prevt = t[i-1];
+        prevx = x[i-1];
+        k[0] = F(prevt,prevx);
+        prod = ScalMult(k[0],h/2.);
+        sum  = VecSum(prevx,prod);
+        k[1] = F(prevt+h/2.,sum);
+        prod = ScalMult(k[1],h/2.);
+        sum  = VecSum(prevx,prod);
+        k[2] = F(prevt+h/2.,sum);
+        prod = ScalMult(k[1],h);
+        sum  = VecSum(prevx,prod);
+        k[3] = F(prevt+h,sum);
+        prod = ScalMult(k[1],2);
+        sum  = VecSum(k[0],prod);
+        prod = ScalMult(k[2],2);
+        sum  = VecSum(sum,prod);
+        sum  = VecSum(sum,k[3]);
+        prod = ScalMult(sum,h/6.);
+        x[i] = VecSum(prevx,prod);
+    }
+    return x;
+}
+
+double ShootRK4SO(std::function<double(double,double,double)> f,std::function<double(double,double,double)> g, double x0, double xf, double y0, double z0, int n){
+    Vector x = linspace(x0,xf,n);
+    double h = (xf-x0)/(n-1);
+    Vector y = VecFull(0,n); y[0] = y0;
+    Vector z = VecFull(0,n); z[0] = z0;
+    double k1; double k2; double k3; double k4;
+    double l1; double l2; double l3; double l4;
+    for (int i = 1; i < n; i++){
+        k1 = f(x[i-1],y[i-1],z[i-1]);
+        l1 = g(x[i-1],y[i-1],z[i-1]);
+        k2 = f(x[i-1]+h/2.,y[i-1]+(h*k1)/2.,z[i-1]+(h*l1)/2.);
+        l2 = g(x[i-1]+h/2.,y[i-1]+(h*k1)/2.,z[i-1]+(h*l1)/2.);
+        k3 = f(x[i-1]+h/2.,y[i-1]+(h*k2)/2.,z[i-1]+(h*l2)/2.);
+        l3 = g(x[i-1]+h/2.,y[i-1]+(h*k2)/2.,z[i-1]+(h*l2)/2.);
+        k4 = f(x[i-1]+h,y[i-1]+h*k3, z[i-1]+h*l3);
+        l4 = g(x[i-1]+h,y[i-1]+h*k3, z[i-1]+h*l3);
+        y[i] = y[i-1]+h*(k1+2*k2+2*k3+k4)/6.;
+        z[i] = z[i-1]+h*(l1+2*l2+2*l3+l4)/6.;
+    }
+    return y[n-1];
+}
+
+double ShootSO(std::function<double(double,double,double)> f,std::function<double(double,double,double)> g, double x0, double xf, double y0, double yf, int n, double tol){
+    double p0 = 0.5*(yf-y0)/(xf-x0); double p1; double p2;
+    double err0; double err1; double err2; double y;
+    y = ShootRK4SO(f,g,x0,xf,y0,p0,n); err0 = y-yf;
+    if (p0*err0 > 0){
+        p1 = p0/2.;
+    } else if(p0*err0 < 0){
+        p1 = 2*p0;
+    } else if(p0 == 0 && err0 > 0){
+        p1 = -1;
+    } else if(p0 == 0 && err0 < 0){
+        p1 = 1;
+    }
+    y = ShootRK4SO(f,g,x0,xf,y0,p1,n); err1 = y-yf;
+    while (err1 > tol){
+        p2 = p1 - err1*(p1-p0)/(err1-err0);
+        y = ShootRK4SO(f,g,x0,xf,y0,p2,n); err2 = y-yf;
+        p0 = p1; p1 = p2; err0 = err1; err1 = err2;
+    }
+    return p1;
 }

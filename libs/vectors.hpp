@@ -146,6 +146,16 @@ Vector ScalMult(Vector& A, double lambda){
     }
     return B;
 }
+
+// Multiplies a vector A by a scalar lambda
+Vector ScalSum(Vector& A, double lambda){
+    int n = A.size();
+    Vector B(n,0);                          // Define the solution
+    for (int i = 0; i < n; i++){            // For every component
+        B[i] = lambda+A[i];
+    }
+    return B;
+}
 // Multiplies a vector A by a scalar lambda
 Matrix ScalMultMat(Matrix& A, double lambda){
     int rows = A.size(); int cols = A[0].size();

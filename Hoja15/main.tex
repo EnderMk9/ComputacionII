@@ -1,0 +1,73 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lachaise Assignment
+% LaTeX Template
+% Version 1.0 (26/6/2018)
+%
+% This template originates from:
+% http://www.LaTeXTemplates.com
+%
+% Authors:
+% Marion Lachaise & François Févotte
+% Vel (vel@LaTeXTemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+\documentclass{article}
+
+\input{structure.tex} % Include the file specifying the document structure and custom commands
+\usepackage{lscape}
+%----------------------------------------------------------------------------------------
+%	ASSIGNMENT INFORMATION
+%----------------------------------------------------------------------------------------
+
+\title{Práctica 14} % Title of the assignment
+
+\author{Abel Rosado Peinado - 5265\\ \texttt{abel.rosado@estudiante.uam.es}} % Author name and email address
+
+\date{UAM --- \today} % University, school and/or department name(s) and a date
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Print the title
+\noindent Queremos resolver el siguiente sistema de ecuaciones diferenciales ordinarias
+\[\left\{\begin{matrix}
+	\dot{y}_1 = v_1 \phantom{---------} \\ \dot{v}_1 =-\frac{k_1}{m_1}y_1-\frac{k_2}{m_1}(y_1-y_2) \\
+	\dot{y}_2 = v_2 \phantom{---------} \\ \dot{v}_2 =\frac{k_2}{m_2}(y_1-y_2)  \phantom{-----}
+\end{matrix}\right.\]
+Las soluciones usando el método de Runge-Kutta de cuarto orden se observan en la figura siguiente y animados en los vídeos adjuntos.
+
+\begin{minipage}{8cm}
+	\centering
+	\includegraphics[width=7.5cm]{untitled.png}
+  \end{minipage}%
+  \begin{minipage}{8cm}
+	\centering
+	\includegraphics[width=7.5cm]{untitled1.png}
+  \end{minipage}
+
+Para obtener los nodos normales tenemos la siguiente ecuación dervivada de la de arriba
+\[\left(\begin{matrix}
+	\ddot{y}_1 \\ \ddot{y}_2
+\end{matrix}\right) = \left(\begin{matrix}
+	-\frac{k_1}{m_1} -\frac{k_2}{m_1} & \frac{k_2}{m_1}\\
+	\frac{k_2}{m_2} & -\frac{k_2}{m_2}
+\end{matrix}\right) \left(\begin{matrix}
+	y_1 \\ y_2
+\end{matrix}\right) = \left(\begin{matrix}
+	-3 & 1.75\\
+	1 & -1
+\end{matrix}\right) \left(\begin{matrix}
+	y_1 \\ y_2
+\end{matrix}\right) \]
+Podríamos diagonalizarla, pero no por el método de Jacobi, puesto que no es diagonal, si lo hacemos obtenemos que los autovalores y autovectores son
+\[\lambda = \frac{-4 \pm \sqrt{11}}{2} \ \ \ \ \ v = \left(\begin{matrix} -2 \pm \sqrt{11} \\ 2
+\end{matrix}\right) \]
+\end{document}
