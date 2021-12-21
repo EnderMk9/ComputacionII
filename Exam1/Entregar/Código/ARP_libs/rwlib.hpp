@@ -84,22 +84,6 @@ void write_col_double(string wname, Vector& wdata, bool csv = 0, int pres = 16){
     wfile.close();
 }
 
-void write_2col_double(string wname, Vector& wdata1, Vector& wdata2, bool csv = 0, int pres = 16){
-    ofstream wfile (wname);  // set read file
-    wfile.precision(pres);
-    int n=wdata1.size();
-    if (not csv){
-        for (int i = 0; i < n; i++){
-            wfile << wdata1[i] << "  " << wdata2[i] << endl;
-        }   
-    }else if (csv){
-        for (int i = 0; i < n; i++){
-            wfile << wdata1[i] << ", " << wdata2[i] << "," << endl;
-        } 
-    }
-    wfile.close();
-}
-
 void write_mat_double(string wname, Matrix& wdata, bool csv = 0, int pres = 16){
     ofstream wfile (wname);  // set read file
     wfile.precision(pres);

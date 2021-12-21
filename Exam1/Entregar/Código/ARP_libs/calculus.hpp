@@ -382,26 +382,3 @@ double ShootSO(std::function<double(double,double,double)> f,std::function<doubl
     }
     return p1;
 }
-
-// solves y'' = p(x)y' + q(x)y + r(x) for y(x0) = y0 and y(xf) = yf
-Vector FiniteDifferences(std::function<double(double)> p, std::function<double(double)> q, std::function<double(double)> r, int N, double x0, double xf, double y0, double yf){
-    double h = (xf-x0)/(N+1);
-    Vector x = linspace(x0,xf,N+2);
-    Vector a = VecFull(0,N-1); Vector b = VecFull(0,N);
-    Vector c = VecFull(0,N-1); Vector f = VecFull(0,N);
-    for (int i = 0; i < N-1; i++){
-        a[i] = -1+h*p(x[i+1])/2.;
-    } for (int i = 0; i < N; i++){
-        b[i] = 2+h*h*q(x[i+1]);
-        f[i] = -h*h*r(x[i+1]);
-    } for (int i = 1; i < N; i++){
-        c[i-1] = -1-h*p(x[i+1])/2.;
-    } f[0]   += y0*(1+h*p(x0)/2.);
-      f[N-1] += yf*(1-h*p(xf)/2.);
-    Vector s = TrDiagSolve(c,b,a,f);
-    Vector y = VecFull(0,N+2);
-    for (int i = 1; i < N+2; i++){
-        y[i] = s[i-1];
-    } y[0] = y0; y[N+1] = yf;
-    return y;
-}

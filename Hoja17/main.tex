@@ -1,0 +1,85 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lachaise Assignment
+% LaTeX Template
+% Version 1.0 (26/6/2018)
+%
+% This template originates from:
+% http://www.LaTeXTemplates.com
+%
+% Authors:
+% Marion Lachaise & François Févotte
+% Vel (vel@LaTeXTemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+\documentclass{article}
+
+\input{structure.tex} % Include the file specifying the document structure and custom commands
+\usepackage{lscape}
+%----------------------------------------------------------------------------------------
+%	ASSIGNMENT INFORMATION
+%----------------------------------------------------------------------------------------
+
+\title{Práctica 14} % Title of the assignment
+
+\author{Abel Rosado Peinado - 5265\\ \texttt{abel.rosado@estudiante.uam.es}} % Author name and email address
+
+\date{UAM --- \today} % University, school and/or department name(s) and a date
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Print the title
+\noindent Queremos encontrar la función potencial $\phi(r)$ entre dos superficies esféricas conductoras cargadas, tal que $\phi(R_1) = V_1$ y $\phi(R_2) = V_2$, para ello, como el potencial es simétricamente esférico, aplicamos la ecuación de Laplace en coordendas esféricas, tal que,
+\[\nabla^2 \phi = \frac{1}{r^2} \frac{d}{dr}\left(r^2 \frac{d \phi}{dr}\right) = 0 \rightarrow \frac{d \phi}{dr} = \frac{c_1}{r^2} \rightarrow \phi = \frac{A}{r}+ B\]
+Ahora aplicamos las condiciones de contorno
+\[\left\{\begin{matrix}
+	\frac{A}{R_1}+ B = V_1 \\ \frac{A}{R_2}+ B = V_2
+\end{matrix}\right. \rightarrow \left\{\begin{matrix}
+	A = \frac{R_1 R_2}{R_2-R_1}(V_1-V_2) \\ B = \frac{V_2 R_2 - V_1 R_1}{R_2-R_1} \phantom{---}
+\end{matrix}\right.\] 
+Entonces, si $R_1 = 0.05 $ m, $R_2 = 0.1$ m, $V_1 = 110$ V y $V_2 = 0$ V, entonces $A = 11 $ Vm y $B = -110$ V.
+
+\noindent 'Para resolverlo númericamente, convertimos la ecuación de Laplace en una ecuación de diferencias finitas
+\[\frac{d^2 \phi}{dr^2} = -\frac{2}{r} \frac{d \phi}{d r} \rightarrow \frac{\phi(r_{i+1})-2\phi(r_i)+\phi(r_{i-1})}{h^2} = -\frac{2}{r_i} \frac{\phi(r_{i+1})-\phi(r_{i-1})}{2h} \ \ \ \ \phi(r_i)\mapsto \omega_i\]
+\[\frac{\omega_{i+1}-2\omega_{i}+\omega_{i-1}}{h^2} = -\frac{2}{r_i} \frac{\omega_{i+1}-\omega_{i-1}}{2h}\rightarrow -2\omega_{i}+\omega_{i+1}\left(1+\frac{h}{r_i}\right)+\omega_{i-1}\left(1-\frac{h}{r_i}\right) = 0\]
+Que podemos organizar como una matriz y resolver el sistema lineal asociado, tal que
+\[\left[\begin{matrix}
+	2 & -\left(1+\frac{h}{r_1}\right) & 0 & \hdots & 0 \\
+	-\left(1-\frac{h}{r_2}\right) & 2 & -\left(1+\frac{h}{r_2}\right) & & \vdots \\
+	0 & \ddots & \ddots & \ddots & 0\\
+	\vdots & \ddots & \ddots & \ddots & 0\\
+	0 & 0 & -\left(1-\frac{h}{r_{N-1}}\right) & 2 & -\left(1+\frac{h}{r_{N-1}}\right) \\
+	0 & 0 & 0 & -\left(1-\frac{h}{r_N}\right) & 2 \\
+\end{matrix}\right]\left[\begin{matrix}
+	\omega_1 \\
+	\omega_2 \\
+	\vdots \\
+	\omega_{N-1}\\
+	\omega_N \\
+\end{matrix}\right] = \left[\begin{matrix}
+	\omega_0\left(1-\frac{h}{r_1}\right) \\
+	0 \\
+	\vdots \\
+	0\\
+	\omega_{N+1}\left(1+\frac{h}{r_N}\right)\\
+\end{matrix}\right]\]
+De tal forma que $\omega_0 = \phi(r_0) = \phi(R_1) = V_1$ y  $\omega_{N+1} = \phi(r_{N+1}) = \phi(R_2) = V_2$.
+\newpage
+\begin{minipage}{8cm}
+	\centering
+	\includegraphics[width=7.5cm]{untitled1.png}
+  \end{minipage}%
+  \begin{minipage}{8cm}
+	\centering
+	\includegraphics[width=7.5cm]{untitled2.png}
+  \end{minipage}
+  Vemos entonces que a mayor número de intervalos, mayor es la precisión, algo esperable, y que para esta función en concreto, cuanto más te acercas a $R_2$, el error tiende a 0, mientras que cuando te acercas a $R_1$ el error no tiende a 0 nada más que en $r=R_1$.
+\end{document}
