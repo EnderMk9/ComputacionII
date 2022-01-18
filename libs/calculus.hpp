@@ -192,8 +192,34 @@ double DefIntTrap(std::function<double(double)> f, double a, double b, int n){
     return I;
 }
 
+// K is suck that |f''(x)|<= K for all x in the interval of integration
+double DefIntTraptol(std::function<double(double)> f, double a, double b, double tol, double K){
+    int n = ceil(pow(K*pow(b-a,3.)/(12*tol), 1./2));
+    double I; double h = (b-a)/n;
+    I = (h/2)*(f(a)+f(b));
+    for (int i = 1; i < n; i++){
+        I += h*f(a+i*h);
+    }
+    return I;
+}
+
 // n even
 double DefIntSimp13(std::function<double(double)> f, double a, double b, int n){
+    double I; double h = (b-a)/n;
+    I = (h/3)*(f(a)+f(b));
+    for (int i = 1; i < n; i = i+2){
+        I += (4./3)*h*f(a+i*h);
+    }
+    for (int i = 2; i < n-1; i = i+2){
+        I += (2./3)*h*f(a+i*h);
+    }
+    return I;
+}
+
+// M is suck that |f⁽⁴⁾(x)|<= M for all x in the interval of integration
+double DefIntSimp13tol(std::function<double(double)> f, double a, double b, double tol, double M){
+    int n = ceil(pow(M*pow(b-a,5.)/(180*tol), 1./4));
+    if (n % 2 != 0) n++;
     double I; double h = (b-a)/n;
     I = (h/3)*(f(a)+f(b));
     for (int i = 1; i < n; i = i+2){
@@ -286,6 +312,7 @@ Matrix RungeKutta4FO(std::function<double(double,double)> yp, double x0, double 
     return xy;
 }
 
+// System of two differential equiations such that dx/dt = f(t,x,y) and dy/dt ) g(t,x,y)
 Matrix RungeKutta4SO(std::function<double(double,double,double)> f,std::function<double(double,double,double)> g, double x0, double xf, double y0, double z0, int n){
     Vector x = linspace(x0,xf,n);
     double h = (xf-x0)/(n-1);

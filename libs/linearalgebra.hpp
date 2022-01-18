@@ -233,6 +233,7 @@ double determinant(Matrix& M){
 
 // Solves Ax=b using LU decomposition
 // Matrix A must be non-singular, square and b same size as A
+// A must not have 0s in the diagonal
 Vector LUSolve(Matrix& A, Vector& b, bool out = 0){
     int n=A.size(); int cols=A[0].size();  // Size of M
     int bsize = b.size();                  // Size of b
