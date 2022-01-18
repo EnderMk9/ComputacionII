@@ -36,7 +36,7 @@ int main(){
     //----------------------------------------------------------
     // Evaluate f(\lambda) and export data
     Vector lambda = linspace(0.0001, 1, 1000);
-    vector f = eval(lambdarootbind, lambda); int nf = f.size();
+    Vector f = eval(lambdarootbind, lambda); int nf = f.size();
     Matrix fdata(2,Vector(nf,0)); fdata[0] = lambda; fdata[1] = f;
     fdata = transpose(fdata); write_mat_double("fdata.dat", fdata);
 }

@@ -20,5 +20,5 @@ int main(){
     Vector y3 = FiniteDifferences(p,qr,qr,1000,x0,xf,y0,yf);
     Vector x3 = linspace(x0,xf,1000+2,1);
     write_2col_double("dat3.dat",x3,y3);
-    GnuplotPipe gp; gp.sendLine("plot 'dat3.dat'");
+    //GnuplotPipe gp; gp.sendLine("plot 'dat3.dat'");
 }
