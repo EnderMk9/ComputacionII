@@ -164,7 +164,7 @@ Vector partialCDVec(int n,int i,std::function<Vector (Vector&)> f,Vector& x0,dou
 }
 
 // Calculates the Jacobian using numerical methods for an R^n to R^n function
-Matrix JacobianNum(int n,Vector& x0,std::function<Vector(Vector&)> f,double h,double tol=0,bool loop=0){
+Matrix JacobNum(int n,Vector& x0,std::function<Vector(Vector&)> f,double h,double tol=0,bool loop=0){
     Matrix J( n,vector<double>(n,0)); // Declaration of the variable
     if (loop){
         for (int j = 0; j < n; j++){
@@ -183,7 +183,7 @@ Matrix JacobianNum(int n,Vector& x0,std::function<Vector(Vector&)> f,double h,do
 // Integrals
 //-------------------------------------------------------------------------------------
 
-double DefIntTrap(std::function<double(double)> f, double a, double b, int n){
+double IntTr(std::function<double(double)> f, double a, double b, int n){
     double I; double h = (b-a)/n;
     I = (h/2)*(f(a)+f(b));
     for (int i = 1; i < n; i++){
@@ -193,18 +193,38 @@ double DefIntTrap(std::function<double(double)> f, double a, double b, int n){
 }
 
 // K is suck that |f''(x)|<= K for all x in the interval of integration
-double DefIntTraptol(std::function<double(double)> f, double a, double b, double tol, double K){
-    int n = ceil(pow(K*pow(b-a,3.)/(12*tol), 1./2));
+double IntTrTol(std::function<double(double)> f, double a, double b, double tol, double K, bool ncout = 0){
+    int n = ceil(pow(K*pow(b-a,3.)/(12*tol), 1./2))+1;
     double I; double h = (b-a)/n;
     I = (h/2)*(f(a)+f(b));
     for (int i = 1; i < n; i++){
         I += h*f(a+i*h);
     }
+    if (ncout) cout << "n = " << n << endl;
     return I;
 }
 
-// n even
-double DefIntSimp13(std::function<double(double)> f, double a, double b, int n){
+double IntTrLoop(std::function<double(double)> f, double a, double b, double tol, int n0 = 10, bool ncout = 0){
+    double I; double I1; double err = 2*tol;
+    int n = n0; double h = (b-a)/n;
+    I = (h/2)*(f(a)+f(b));
+    for (int i = 1; i < n; i++){
+        I += h*f(a+i*h);
+    }
+    while (err > tol){
+      n += n/2.; h = (b-a)/n;
+      I1 = (h/2)*(f(a)+f(b));
+      for (int i = 1; i < n; i++){
+        I1 += h*f(a+i*h);
+      }
+      err = abs(I1-I); I = I1;
+    }
+    if (ncout) cout << "n = " << n << endl;
+    return I;
+}
+
+// n even, is the number of intervals, not numbers
+double IntSmp13(std::function<double(double)> f, double a, double b, int n){
     double I; double h = (b-a)/n;
     I = (h/3)*(f(a)+f(b));
     for (int i = 1; i < n; i = i+2){
@@ -217,8 +237,8 @@ double DefIntSimp13(std::function<double(double)> f, double a, double b, int n){
 }
 
 // M is suck that |f⁽⁴⁾(x)|<= M for all x in the interval of integration
-double DefIntSimp13tol(std::function<double(double)> f, double a, double b, double tol, double M){
-    int n = ceil(pow(M*pow(b-a,5.)/(180*tol), 1./4));
+double IntSmp13Tol(std::function<double(double)> f, double a, double b, double tol, double M, bool ncout = 0){
+    int n = ceil(pow(M*pow(b-a,5.)/(180*tol), 1./4))+1;
     if (n % 2 != 0) n++;
     double I; double h = (b-a)/n;
     I = (h/3)*(f(a)+f(b));
@@ -228,11 +248,37 @@ double DefIntSimp13tol(std::function<double(double)> f, double a, double b, doub
     for (int i = 2; i < n-1; i = i+2){
         I += (2./3)*h*f(a+i*h);
     }
+    if (ncout) cout << "n = " << n << endl;
     return I;
 }
 
-// n multiple of 3
-double DefIntSimp38(std::function<double(double)> f, double a, double b, int n){
+double IntSmpLoop(std::function<double(double)> f, double a, double b, double tol, int n0 = 10, bool ncout = 0){
+    double I; double I1; double err = 2*tol;
+    int n = n0; double h = (b-a)/n;
+    I = (h/3)*(f(a)+f(b));
+    for (int i = 1; i < n; i = i+2){
+        I += (4./3)*h*f(a+i*h);
+    }
+    for (int i = 2; i < n-1; i = i+2){
+        I += (2./3)*h*f(a+i*h);
+    }
+    while (err > tol){
+      n += n/2. +1; h = (b-a)/n;
+      I1 = (h/3)*(f(a)+f(b));
+      for (int i = 1; i < n; i = i+2){
+        I1 += (4./3)*h*f(a+i*h);
+      }
+      for (int i = 2; i < n-1; i = i+2){
+        I1 += (2./3)*h*f(a+i*h);
+      } 
+      err = abs(I1-I); I = I1;
+    }
+    if (ncout) cout << "n = " << n << endl;
+    return I;
+}
+
+// n multiple of 3, is the number of intervals, not numbers
+double IntSmp38(std::function<double(double)> f, double a, double b, int n){
     double I; double h = (b-a)/n;
     I = (3*h/8)*(f(a)+f(b));
     for (int i = 1; i < n; i = i+3){
@@ -247,34 +293,48 @@ double DefIntSimp38(std::function<double(double)> f, double a, double b, int n){
     return I;
 }
 
-//
-double DefIntSimp(std::function<double(double)> f, double a, double b, int n){
+double IntSmp(std::function<double(double)> f, double a, double b, int n){
     if (n % 2 == 0){
-        return DefIntSimp13(f,a,b,n);
+        return IntSmp13(f,a,b,n);
     } else if (n % 2 != 0){
         double I; double h = (b-a)/n;
-        I = DefIntSimp13(f,a,b-3*h,n-3);
+        I = IntSmp13(f,a,b-3*h,n-3);
         I+= (3*h/8.)*(f(b-3*h)+f(b)+3*f((3*b-6*h)/3.)+3*f((3*b-3*h)/3.));
         return I;
     }
     return {};
 }
 
-Matrix Lw = {{2,0,0,0,0},
+double IntTrVec(Vector& x, Vector& y){
+    int nx = x.size(); int ny = y.size();
+    if (nx != ny){
+      cout << "ERROR SIZES NOT COMPATIBLE" << endl;
+      return {};
+    }
+    double I; double h = (x[nx-1]-x[0])/(nx-1);
+    I = (h/2.)*(y[0]+y[ny-1]);
+    for (int i = 1; i < ny-1; i++) {
+      I += h*y[i];
+    }
+    return I;
+}
+
+Matrix GLw = {{2,0,0,0,0},
             {1,1,0,0,0},
             {8./9,5./9,5./9,0,0},
             {(18+sqrt(30))/(36.),(18+sqrt(30))/(36.),(18-sqrt(30))/(36.),(18-sqrt(30))/(36.),0},
             {128./225,(322+13*sqrt(70))/(900.),(322+13*sqrt(70))/(900.),(322-13*sqrt(70))/(900.),(322-13*sqrt(70))/(900.)}};
-Matrix Lxi = {{0,0,0,0,0},
+
+Matrix GLxi = {{0,0,0,0,0},
              {1./sqrt(3),-1./sqrt(3),0,0,0},
              {0,sqrt(3./5),-sqrt(3./5),0,0},
              {sqrt(3./7 - (2./7)*sqrt(6./5)),-sqrt(3./7 - (2./7)*sqrt(6./5)),sqrt(3./7 + (2./7)*sqrt(6./5)),-sqrt(3./7 + (2./7)*sqrt(6./5)),0},
              {0,(1./3)*sqrt(5-2*sqrt(10./7)),-(1./3)*sqrt(5-2*sqrt(10./7)),(1./3)*sqrt(5+2*sqrt(10./7)),-(1./3)*sqrt(5+2*sqrt(10./7))}};
 
-double DefIntGaussLegendre(std::function<double(double)> f, double a, double b, int n = 4){
+double IntQuadGL(std::function<double(double)> f, double a, double b, int n = 4){
     double I{}; double p = (b-a)/2; double q = (b+a)/2;
     for (int i = 0; i < n; i++){
-        I += p*Lw[n-1][i]*f(p*Lxi[n-1][i]+q);
+        I += p*GLw[n-1][i]*f(p*GLxi[n-1][i]+q);
     }
     return I;
 }
@@ -283,7 +343,7 @@ double DefIntGaussLegendre(std::function<double(double)> f, double a, double b, 
 // EDO's
 //-------------------------------------------------------------------------------------
 
-Matrix EulerFO(std::function<double(double,double)> yp, double x0, double xf,double y0, int n){
+Matrix Euler1O(std::function<double(double,double)> yp, double x0, double xf,double y0, int n){
     Vector x = linspace(x0,xf,n);
     double h = (xf-x0)/(n-1);
     Vector y = VecFull(0,n); y[0] = y0;
@@ -295,7 +355,7 @@ Matrix EulerFO(std::function<double(double,double)> yp, double x0, double xf,dou
     return xy;
 }
 
-Matrix RungeKutta4FO(std::function<double(double,double)> yp, double x0, double xf,double y0, int n){
+Matrix RK4_1O(std::function<double(double,double)> yp, double x0, double xf,double y0, int n){
     Vector x = linspace(x0,xf,n);
     double h = (xf-x0)/(n-1);
     Vector y = VecFull(0,n); y[0] = y0;
@@ -313,7 +373,7 @@ Matrix RungeKutta4FO(std::function<double(double,double)> yp, double x0, double 
 }
 
 // System of two differential equiations such that dx/dt = f(t,x,y) and dy/dt ) g(t,x,y)
-Matrix RungeKutta4SO(std::function<double(double,double,double)> f,std::function<double(double,double,double)> g, double x0, double xf, double y0, double z0, int n){
+Matrix RK4_2O(std::function<double(double,double,double)> f,std::function<double(double,double,double)> g, double x0, double xf, double y0, double z0, int n){
     Vector x = linspace(x0,xf,n);
     double h = (xf-x0)/(n-1);
     Vector y = VecFull(0,n); y[0] = y0;
@@ -337,7 +397,7 @@ Matrix RungeKutta4SO(std::function<double(double,double,double)> f,std::function
     return xyz;
 }
 
-Matrix RungeKutta4nO(std::function<Vector(double,Vector&)> F, double t0, double tf, Vector x0, int n){
+Matrix RK4_nO(std::function<Vector(double,Vector&)> F, double t0, double tf, Vector x0, int n){
     Vector t = linspace(t0,tf,n);
     double h = (tf-t0)/(n-1); int m = x0.size(); double prevt; Vector prevx;
     Matrix x = MatFull(0,n,m); x[0] = x0;
@@ -366,7 +426,8 @@ Matrix RungeKutta4nO(std::function<Vector(double,Vector&)> F, double t0, double 
     return x;
 }
 
-double ShootRK4SO(std::function<double(double,double,double)> f,std::function<double(double,double,double)> g, double x0, double xf, double y0, double z0, int n){
+// mostly the same, it just return the last element of the first dependent variable
+double RK4_2O_shoot(std::function<double(double,double,double)> f,std::function<double(double,double,double)> g, double x0, double xf, double y0, double z0, int n){
     Vector x = linspace(x0,xf,n);
     double h = (xf-x0)/(n-1);
     Vector y = VecFull(0,n); y[0] = y0;
@@ -388,10 +449,10 @@ double ShootRK4SO(std::function<double(double,double,double)> f,std::function<do
     return y[n-1];
 }
 
-double ShootSO(std::function<double(double,double,double)> f,std::function<double(double,double,double)> g, double x0, double xf, double y0, double yf, int n, double tol){
+double Shoot_2O(std::function<double(double,double,double)> f,std::function<double(double,double,double)> g, double x0, double xf, double y0, double yf, int n, double tol){
     double p0 = 0.5*(yf-y0)/(xf-x0); double p1; double p2;
     double err0; double err1; double err2; double y;
-    y = ShootRK4SO(f,g,x0,xf,y0,p0,n); err0 = y-yf;
+    y = RK4_2O_shoot(f,g,x0,xf,y0,p0,n); err0 = y-yf;
     if (p0*err0 > 0){
         p1 = p0/2.;
     } else if(p0*err0 < 0){
@@ -401,17 +462,17 @@ double ShootSO(std::function<double(double,double,double)> f,std::function<doubl
     } else if(p0 == 0 && err0 < 0){
         p1 = 1;
     }
-    y = ShootRK4SO(f,g,x0,xf,y0,p1,n); err1 = y-yf;
+    y = RK4_2O_shoot(f,g,x0,xf,y0,p1,n); err1 = y-yf;
     while (err1 > tol){
         p2 = p1 - err1*(p1-p0)/(err1-err0);
-        y = ShootRK4SO(f,g,x0,xf,y0,p2,n); err2 = y-yf;
+        y = RK4_2O_shoot(f,g,x0,xf,y0,p2,n); err2 = y-yf;
         p0 = p1; p1 = p2; err0 = err1; err1 = err2;
     }
     return p1;
 }
 
 // solves y'' = p(x)y' + q(x)y + r(x) for y(x0) = y0 and y(xf) = yf
-Vector FiniteDifferences(std::function<double(double)> p, std::function<double(double)> q, std::function<double(double)> r, int N, double x0, double xf, double y0, double yf){
+Vector FiniteDiff(std::function<double(double)> p, std::function<double(double)> q, std::function<double(double)> r, int N, double x0, double xf, double y0, double yf){
     double h = (xf-x0)/(N+1);
     Vector x = linspace(x0,xf,N+2);
     Vector a = VecFull(0,N-1); Vector b = VecFull(0,N);

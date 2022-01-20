@@ -82,7 +82,7 @@ Vector NewtonNumSys(int n,Vector& x0,std::function<Vector(Vector&)> f,double h, 
     Vector dx(n,0);
     if (loop){                                  // PartialLoop option
         while (err > tol){
-            J = JacobianNum(n,x, f, h, tol,1);  // Calculate Jacobian
+            J = JacobNum(n,x, f, h, tol,1);  // Calculate Jacobian
             b = f(x); b = ScalMult(b,-1);       // independent term
             d = LUSolve(J, b); x = VecSum(x,d); // Solution
             dx = VecDiff(x,xp); err = norm(dx); // error
@@ -90,7 +90,7 @@ Vector NewtonNumSys(int n,Vector& x0,std::function<Vector(Vector&)> f,double h, 
         }
     }else if (not loop){                        // Partial option
         while (err > tol){
-            J = JacobianNum(n,x, f, h);         // Calculate Jacobian
+            J = JacobNum(n,x, f, h);         // Calculate Jacobian
             b = f(x); b = ScalMult(b,-1);       // independent term
             d = LUSolve(J, b); x = VecSum(x,d); // Solution
             dx = VecDiff(x,xp); err = norm(dx); // error

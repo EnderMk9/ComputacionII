@@ -364,15 +364,17 @@ Vector GaussSeidelSolve(Matrix& A, Vector& b, Vector x0, double tol, int& k,int 
 // Espectral theory
 //-----------------------------------------------------------------------------------------
 
+// This function return the angle of rotation for Jacobi's diagonalization method
 double JacobiAngle(double& aii, double& ajj, double& aij){
     if (aii != ajj){
         return atan(2*aij/(aii-ajj))/2;
-    }else if(aii == ajj){
+    }else if(aii == ajj){ // If a_ii = a_jj, the above fails
         return M_PI/4;
     }
     return {};
 }
 
+// Create a rotation matrix
 /* Matrix Rotation(double& theta, int i, int j, int n){
     Matrix R = MIdentity(n);
     R[i][i] =  cos(theta);
@@ -382,15 +384,15 @@ double JacobiAngle(double& aii, double& ajj, double& aij){
     return R;
 } */
 
+// Return a vector v with the triangle of the matrix in line, and an index matrix with the corresponding
+// indices of the original matrix
 Vector PartMatVec(Matrix& A, IMatrix& index, bool absv = 0){
-    int n = A.size();
-    int p = (n*n-n)/2;
-    Vector v(p,0);
-    IMatrix Index(p,IVector(2,0));
-    index = Index; int k{};
-    if (absv){
+    int n = A.size(); int p = (n*n-n)/2; // p is the number of elements in one of the triangles of the matrix
+    Vector v(p,0); IMatrix Index(p,IVector(2,0)); // v is going to be the elements of the triangle placed in line
+    index = Index; int k{}; // index is going to be the list of corresponding indices of v to the original matrix
+    if (absv){ // v is the absolute value of the triangle
         for (int i = 0; i < n; i++){
-            for (int j = i+1; j < n; j++){
+            for (int j = i+1; j < n; j++){ // Traversing the triangle
                 v[k] = abs(A[i][j]);
                 index[k][0] = i; index[k][1] = j;
                 k++;
@@ -408,12 +410,14 @@ Vector PartMatVec(Matrix& A, IMatrix& index, bool absv = 0){
     return v;
 }
 
+// Return a vector with two components indicating the maximum of the matrix,
+// and saves the value of the maximum in a variable called max
 IVector MaxMat(Matrix& A, double& max){
     IMatrix Index;
     Vector v = PartMatVec(A, Index,1);
-    max = *max_element(v.begin(), v.end());
-    int i = max_element(v.begin(), v.end())-v.begin();
-    return Index[i];
+    max = *max_element(v.begin(), v.end()); // save the value of the maximum of v (the maximum of A outside the diagonal)
+    int i = max_element(v.begin(), v.end())-v.begin(); // save the index of the maximum of v
+    return Index[i]; // return the indices corresponding to the matrix
 }
 
 Matrix JacobiDiag(Matrix A, Matrix& U, int& k, double tol){
@@ -422,25 +426,26 @@ Matrix JacobiDiag(Matrix A, Matrix& U, int& k, double tol){
     U = MIdentity(n); Matrix P = U;
     IVector MaxIn(2,0); double theta;
     Matrix B = A; MaxIn = MaxMat(A, max);
-    while(max > tol){
+    while(max > tol){   // while max > tol run the algorith
         i = MaxIn[0]; j = MaxIn[1]; k++;
-        theta = JacobiAngle(A[i][i],A[j][j],A[i][j]);
+        theta = JacobiAngle(A[i][i],A[j][j],A[i][j]); // Calculate angle of rotation
         for (int l = 0; l<n; l++){
             P[l][i] =  U[l][i]*cos(theta)+U[l][j]*sin(theta);
             P[l][j] = -U[l][i]*sin(theta)+U[l][j]*cos(theta);
-        }
-        U = P;
+        } // Apply rotation to the previous rotation Matrix 
+        U = P; // Overwrite previous rotation matrix
         for (int l = 0; l<n; l++){
             if (l!=i && l!= j){
                 B[i][l] =  A[i][l]*cos(theta)+A[j][l]*sin(theta); B[l][i] = B[i][l];
                 B[j][l] = -A[i][l]*sin(theta)+A[j][l]*cos(theta); B[l][j] = B[j][l];
             }
-        }
+        } // Apply rotation to A, saving it to a matrix B
         B[i][i]=A[i][i]*pow(cos(theta),2)+A[j][j]*pow(sin(theta),2)+2*A[i][j]*sin(theta)*cos(theta);
         B[j][j]=A[i][i]*pow(sin(theta),2)+A[j][j]*pow(cos(theta),2)-2*A[i][j]*sin(theta)*cos(theta);
         B[j][i] = 0; B[i][j] = 0;
-        MaxIn = MaxMat(B, max);
-        A = B;
+        // This is still applying the rotation
+        MaxIn = MaxMat(B, max); // Calculate the new maximum after the rotation
+        A = B; // Overwrite previous A with b
     }
     return B;
 }
