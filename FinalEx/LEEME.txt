@@ -1,0 +1,9 @@
+Para compilar, debería funcionar ejecutar el siguiente comando
+en el mismo directorio donde se encuentran los archivos ".cpp".
+
+"g++ -std=c++17 ARP_EX.cpp -o ARP_EX"
+
+He preparado además un fichero ejecutable ".sh" que debería poder
+ser ejecutado en cualquier shell de unix, incluyendo MacOS, que 
+compila ambos archivos, ejecutando ese mismo comando, en caso de 
+que fuese de utilidad.

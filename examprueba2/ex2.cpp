@@ -13,7 +13,7 @@ double f2(double t, double theta, double thetadot){
 int main(){
   int n = tf/dt+1;
   //Vector t = linspace(t0, tf, n);
-  Matrix Data = RungeKutta4SO(f1,f2,t0,tf,theta0,thetadot0, n);
-  Data = transpose(Data);
-  write_mat_double("data.dat", Data);
+  Matrix Data = RK4_2O(f1,f2,t0,tf,theta0,thetadot0, n);
+  //Data = transpose(Data);
+  //write_mat_double("data.dat", Data);
 }
