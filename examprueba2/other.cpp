@@ -1,16 +1,20 @@
 #include "libs/header.hpp"
 
-double q (double t){
-  return -1;
-}
-double p (double t){
-  return 1;
-}
-double r (double t){
-  return 0;
+double gauss(double x){
+  return exp(-(x*x)/2.)/sqrt(2*M_PI);
 }
 
+double h = 0.01; double xmin = -4; double xmax = 4;
+
 int main(){
-  Vector y = FiniteDiff(p,q,r,100,0,4,0,-2);
-  coutvec(y);
+  int n = ((xmax-xmin)/h)+1;
+  Matrix xy = IntIndSmp13(gauss,xmin,xmax,100,n);
+  Vector dF = derivativeCDArr(xy[0], xy[1]);
+  Vector f = eval(gauss, xy[0]);
+  Vector e = VecDiff(dF, f);
+  e = VecDiv(e, f); e = VecAbs(e);
+  Matrix Data = MatFull(0,5,81);
+  Data[0] = xy[0]; Data[1] = xy[1]; Data[2] = dF; Data[3] = f; Data[4] = e;
+  Data = transpose(Data);
+  write_mat_double("gauss0.01.dat",  Data);
 }

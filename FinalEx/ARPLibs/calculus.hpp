@@ -236,7 +236,18 @@ double IntSmp13(std::function<double(double)> f, double a, double b, int n){
     return I;
 }
 
-// M is suck that |f⁽⁴⁾(x)|<= M for all x in the interval of integration
+Matrix IntIndSmp13(std::function<double(double)> f, double a, double b, int N, int n){
+  Vector x = linspace(a,b,n);
+  Vector y = ScalMult(x, 0);
+  for (int i = 1; i < n; i++) {
+    y[i] = IntSmp13(f, x[0],x[i], N);
+  }
+  Matrix xy = MatFull(0,2,n);
+  xy[0] = x; xy[1] = y;
+  return xy;
+}
+
+// M is such that |f⁽⁴⁾(x)|<= M for all x in the interval of integration
 double IntSmp13Tol(std::function<double(double)> f, double a, double b, double tol, double M, bool ncout = 0){
     int n = ceil(pow(M*pow(b-a,5.)/(180*tol), 1./4))+1;
     if (n % 2 != 0) n++;
@@ -472,7 +483,7 @@ double Shoot_2O(std::function<double(double,double,double)> f,std::function<doub
 }
 
 // solves y'' = p(x)y' + q(x)y + r(x) for y(x0) = y0 and y(xf) = yf
-Vector FiniteDiff(std::function<double(double)> p, std::function<double(double)> q, std::function<double(double)> r, int N, double x0, double xf, double y0, double yf){
+Matrix FiniteDiff(std::function<double(double)> p, std::function<double(double)> q, std::function<double(double)> r, int N, double x0, double xf, double y0, double yf){
     double h = (xf-x0)/(N+1);
     Vector x = linspace(x0,xf,N+2);
     Vector a = VecFull(0,N-1); Vector b = VecFull(0,N);
@@ -491,5 +502,7 @@ Vector FiniteDiff(std::function<double(double)> p, std::function<double(double)>
     for (int i = 1; i < N+2; i++){
         y[i] = s[i-1];
     } y[0] = y0; y[N+1] = yf;
-    return y;
+    Matrix xy = MatFull(0,2,N+2);
+    xy[0] = x; xy[1] = y;
+    return xy;
 }
