@@ -408,6 +408,7 @@ Matrix RK4_2O(std::function<double(double,double,double)> f,std::function<double
     return xyz;
 }
 
+
 Matrix RK4_nO(std::function<Vector(double,Vector&)> F, double t0, double tf, Vector x0, int n){
     Vector t = linspace(t0,tf,n);
     double h = (tf-t0)/(n-1); int m = x0.size(); double prevt; Vector prevx;
@@ -435,6 +436,21 @@ Matrix RK4_nO(std::function<Vector(double,Vector&)> F, double t0, double tf, Vec
         x[i] = VecSum(prevx,prod);
     }
     return x;
+}
+
+Matrix RK_n0tol(std::function<Vector(double,Vector&)> F, double t0, double tf, Vector x0, int& nf, double tol, int n0 = 10){
+  Matrix X; Matrix X1; double errorx = 2*tol; double errory = 2*tol; bool stop = 0; int n = n0; bool out = 0;
+  X = RK4_nO(F,t0,tf,x0,n);
+  while(errorx +errory > tol){
+    n0 = n; n += 0.5*n; cout << "n = " << n << ", h = " << (tf-t0)/(n-1);
+    X1 = RK4_nO(F,t0,tf,x0,n);
+    errorx = abs(X1[n-1][0]-X[n0-1][0]);
+    errory = abs(X1[n-1][2]-X[n0-1][2]);
+    cout << ", error in x(t_f) and y(t_f), respectively "<< errorx << "  " << errory <<  endl;
+    X = X1;
+  }
+  nf = n;
+  return X;
 }
 
 // mostly the same, it just return the last element of the first dependent variable

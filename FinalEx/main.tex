@@ -1,0 +1,66 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lachaise Assignment
+% LaTeX Template
+% Version 1.0 (26/6/2018)
+%
+% This template originates from:
+% http://www.LaTeXTemplates.com
+%
+% Authors:
+% Marion Lachaise & François Févotte
+% Vel (vel@LaTeXTemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{article}
+
+\input{structure.tex} % Include the file specifying the document structure and custom commands
+
+%----------------------------------------------------------------------------------------
+%	ASSIGNMENT INFORMATION
+%----------------------------------------------------------------------------------------
+
+\title{Examen de Computación II} % Title of the assignment
+
+\author{Abel Rosado Peinado - 5265\\ \texttt{abel.rosado@estudiante.uam.es}} % Author name and email address
+
+\date{UAM --- \today} % University, school and/or department name(s) and a date
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Print the title
+
+\section*{Ejercicio 1}
+\includegraphics[width=15.5cm]{ln.png}
+
+He estimado el numero de subintervalos necesarios de dos formas, la primera, aprovechando que el error de la integral usando la Regla de Simpson es 
+\[e \leq M\frac{(b-a)^5}{180 n^4} = M\frac{(x-1)^5}{180 n^4} \ \ \ \ n \leq \left( M \frac{(x-1)^5}{180 e} \right)^{1/4} \ \  \ \ |f^{4)}(t)| \leq M \ \forall t \in [1,x]\]
+Estudiando la cuarta derivada de $1/x$, $24/x^4$, vemos que el máximo de esa función en el intervalo de integración es $24$, entonces para cada x, calculamos su n correspondiente e integramos, y obtenemos la primera tabla que se observa arriba.
+
+Por otro lado, he iterado la integral y he tomado el error como la resta de los resultados de dos iteraciones consecutivas, y cuando este fuese menor que la tolerancia, paraba la iteración, así obtenemos los valores de la segunda tabla.
+
+Observamos en ambos casos, el error con respecto a la función calculada por la función $\log$ de c++ es menor que el deseado, y observamos que cuanto mayor es x, menor es el error, que puede deberse a que cada vez la porción de área que añadimos es más pequeña.
+
+\newpage
+\section*{Ejercicio 2}
+\includegraphics[width=7.5cm]{x.png}
+\includegraphics[width=7.5cm]{y.png}
+
+\includegraphics[width=7.5cm]{xy.png}
+\includegraphics[width=7.5cm]{theta.png}
+
+En las dos primeras figuras observamos $x(t)$ e $y(t)$, en la tercera observamos $x(y)$, y en la última esta representado el ángángulo $\arcsin(y/x)$ en función del número de periodos $t/P$ para 3 periodos, donde $P\approx9$\dots
+
+Para obtener un error menor que la precisión, he iterado RK4 y en cada iteración he comparado la diferencia entre $x(t_f)$ e $y(t_f)$ para dos iteraciones sucesivas, y cuando la suma de ambas fuese menor que la tolerancia, paran las iteraciones, he obtenido que $\Delta t \approx 0.003$ s. 
+
+Integrando la figura 4, y dividiendo por el número de periodos, obtenemos que aproximadamente el ángulo recorrido durante un perperiodo es $\theta_m=0.00073$, por lo tanto $2\pi/\theta_m \approx 8550$ periodos, lo que se traduce a unas $21.37$ horas para dar una vuelta completa.
+\end{document} 
